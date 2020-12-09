@@ -1,4 +1,6 @@
 ﻿using CAProxy.AnyGateway.Interfaces;
+using Google.Cloud.Security.PrivateCA.V1Beta1;
+using Google.Protobuf.WellKnownTypes;
 using Keyfactor.AnyGateway.Google;
 using System;
 using System.Collections;
@@ -8,6 +10,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using Google.Protobuf;
 
 namespace GoogleCASandbox
 {
@@ -15,16 +18,38 @@ namespace GoogleCASandbox
     {
         static void Main(string[] args)
         {
-            GoogleCAProxy caProxy = new GoogleCAProxy();
+            Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", @"C:\cms\concise-frame-296019-2e104088b76a.json");
 
-            caProxy.Initialize(new ConfigProvider() { CAConnectionData = new Dictionary<string, object>() {
-                ["ProjectId"] = "concise-frame-296019",
-                ["LocationId"] = "us-east1",
-                ["CAId"] = "kf-cpr-enterprise-sandbox-ca",
-                ["GCPCredentialFilePath"] = "C:\\CMS\\concise-frame-296019-2e104088b76a.json"
-            } }); ;
+            CertificateAuthorityServiceClient gcp =  CertificateAuthorityServiceClient.Create();
+
+            var caName = CertificateAuthorityName.FromProjectLocationCertificateAuthority("concise-frame-296019", "us-east1", "ca-enterprise-subordinate-sandbox-new");
+
+            for (int i = 0; i <= 100; i++)
+            {
+                ByteString publicKey = ByteString.CopyFrom($"MYPUBLICKEY{i}", Encoding.ASCII);
 
 
+                DateTime now = DateTime.Now;
+                var response = gcp.CreateCertificate(new CreateCertificateRequest()
+                {
+                    CertificateId = $"loadtest-{i}-{now:HH}{now:mm}{now:ss}",
+                    ParentAsCertificateAuthorityName = caName,
+                    Certificate = new Certificate()
+                    {
+                        Lifetime = Duration.FromTimeSpan(new TimeSpan(1, 0, 0, 0, 0)),
+                        Config = new CertificateConfig()
+                        {
+                            PublicKey = new PublicKey() { Key = publicKey, Type=PublicKey.Types.KeyType.PemRsaKey},
+                            SubjectConfig = new CertificateConfig.Types.SubjectConfig()
+                            {
+                                CommonName = $"loadcert-{now:MMM}-{now:ffffff}"
+                            }
+                        }
+                    }
+                });
+
+                Console.WriteLine($"Created Load Test Certificate {response.CertificateName.CertificateId}");
+            }
         }
 
         static bool CompareFiles(string file1, string file2)
