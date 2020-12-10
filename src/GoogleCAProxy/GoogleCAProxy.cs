@@ -45,7 +45,8 @@ namespace Keyfactor.AnyGateway.Google
 
                 if (!int.TryParse(productInfo.ProductParameters[LIFETIME_KEY], out int lifetimeInDays))
                 {
-                    throw new ArgumentException($"Unable to parse certificate {LIFETIME_KEY} from Product Parameters for Product Id {productInfo.ProductID}");
+                    Logger.Warn($"Unable to parse certificate {LIFETIME_KEY} from Product Parameters for Product Id {productInfo.ProductID}. Set Lifetime to 30 days.");
+                    lifetimeInDays = 30;
                 }
 
                 var certificate = new Certificate()
