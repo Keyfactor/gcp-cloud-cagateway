@@ -21,6 +21,20 @@ Currently the only method supported for authentication is a Service Credential w
 * privateca.reusableConfigs.list
 * resourcemanager.projects.get
 
+#Install
+* Download latest successful build from DevOps  
+[![Build status](https://devops.corp.keyfactor.com/MainCollection/SolutionEngineering/_apis/build/status/Integration-AnyGateway-GoogleCA)](https://devops.corp.keyfactor.com/MainCollection/SolutionEngineering/_build/latest?definitionId=152)
+
+* Copy *.dll to the Program Files\Keyfactor\ Keyfactor AnyGateway directory
+
+* Update the CAProxyServer.config file
+  * Update the CAConnection section to point at the GoogleCAProxy class
+  ```xml
+  <alias alias="CAConnector" type="Keyfactor.AnyGateway.Google.GoogleCAProxy, GoogleCAProxy"/>
+  ```
+  * Append the binding redirects within the app.config file to the CAProxyServer.config file 
+
+
 # Configuration
 The following sections will breakdown the required configurations for the AnyGatewayConfig.json file that will be imported to configure the Google CA. 
 
