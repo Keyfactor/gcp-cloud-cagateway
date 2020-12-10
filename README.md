@@ -1,6 +1,6 @@
 # Introduction 
 The  [Google Certificate Authority Service](https://cloud.google.com/certificate-authority-service) is a highly available, scalable Google Cloud service that enables you to simplify, automate, and customize the deployment, management, and security of private certificate authorities (CA).
-
+It should be noted that currently, due to the design of the DevOps tier of CA, Enterprise tier CAs are only supported by the AnyGateway. 
 # Prerequsites
 ##[Authentication](https://cloud.google.com/docs/authentication/production)
 A JSON file generated for a Google Service Account will need to be created and placed on the AnyGateway Server. The path of this file into the GOOGLE_APPLICATION_CREDENTIALS environment variable to be used during a CA session. Since the 
