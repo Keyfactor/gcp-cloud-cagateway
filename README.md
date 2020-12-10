@@ -21,6 +21,9 @@ Currently the only method supported for authentication is a Service Credential w
 * privateca.reusableConfigs.list
 * resourcemanager.projects.get
 
+##Certificate Chain
+In order to enroll for certificates the Keyfactor Command server must trust the Private CA chain.  Once you create your Root and/or Subordinate CA, make sure to import the certifiate chain into the Command Server certificate store
+
 #Install
 * Download latest successful build from DevOps  
 [![Build status](https://devops.corp.keyfactor.com/MainCollection/SolutionEngineering/_apis/build/status/Integration-AnyGateway-GoogleCA)](https://devops.corp.keyfactor.com/MainCollection/SolutionEngineering/_build/latest?definitionId=152)
