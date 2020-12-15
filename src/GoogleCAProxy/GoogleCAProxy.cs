@@ -19,7 +19,6 @@ namespace Keyfactor.AnyGateway.Google
     public class GoogleCAProxy : BaseCAConnector
     {
         const string AUTH_ENV_VARIABLE_NAME = "GOOGLE_APPLICATION_CREDENTIALS";
-        const string NEW_CHANGE = "";
         const string PROJECT_ID_KEY = "ProjectId";
         const string LOCATION_ID_KEY = "LocationId";
         const string CA_ID_KEY = "CAId";
