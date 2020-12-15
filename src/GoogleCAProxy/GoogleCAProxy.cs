@@ -19,6 +19,7 @@ namespace Keyfactor.AnyGateway.Google
     public class GoogleCAProxy : BaseCAConnector
     {
         const string AUTH_ENV_VARIABLE_NAME = "GOOGLE_APPLICATION_CREDENTIALS";
+        const string NEW_CHANGE = "";
         const string PROJECT_ID_KEY = "ProjectId";
         const string LOCATION_ID_KEY = "LocationId";
         const string CA_ID_KEY = "CAId";
@@ -32,7 +33,13 @@ namespace Keyfactor.AnyGateway.Google
         private string CAId { get; set; }
 
 
-        public override EnrollmentResult Enroll(ICertificateDataReader certificateDataReader, string csr, string subject, Dictionary<string, string[]> san, EnrollmentProductInfo productInfo, PKIConstants.X509.RequestFormat requestFormat, RequestUtilities.EnrollmentType enrollmentType)
+        public override EnrollmentResult Enroll(ICertificateDataReader certificateDataReader, 
+                                                string csr, 
+                                                string subject, 
+                                                Dictionary<string, string[]> san, 
+                                                EnrollmentProductInfo productInfo, 
+                                                PKIConstants.X509.RequestFormat requestFormat, 
+                                                RequestUtilities.EnrollmentType enrollmentType)
         {
             Logger.MethodEntry(ILogExtensions.MethodLogLevel.Debug);
             try
@@ -42,13 +49,14 @@ namespace Keyfactor.AnyGateway.Google
                 GcpClient = CertificateAuthorityServiceClient.Create();
               
                 var parentAsTypedName = CertificateAuthorityName.FromProjectLocationCertificateAuthority(ProjectId, LocationId, CAId);
+                Logger.Trace($"Enroll at CA: {parentAsTypedName}");
 
                 if (!int.TryParse(productInfo.ProductParameters[LIFETIME_KEY], out int lifetimeInDays))
                 {
                     Logger.Warn($"Unable to parse certificate {LIFETIME_KEY} from Product Parameters for Product Id {productInfo.ProductID}. Set Lifetime to 30 days.");
                     lifetimeInDays = 30;
                 }
-
+                Logger.Trace($"Submit Certificate Request for {subject} with {lifetimeInDays} days validity");
                 var certificate = new Certificate()
                 {
                     PemCsr = $"-----BEGIN NEW CERTIFICATE REQUEST-----\n{pemify(csr)}\n-----END NEW CERTIFICATE REQUEST-----",
@@ -65,13 +73,13 @@ namespace Keyfactor.AnyGateway.Google
                     //RequestId="",//this needs to be durable between reties 
                     CertificateId = $"{now:yyyy}{now:MM}{now:dd}-{now:HH}{now:mm}{now:ss}"//ID is required for Enterprise tier CAs and ignored for other.  
                 };
-                              
+
                 var response = GcpClient.CreateCertificate(createCertificateRequest);
 
                 return new EnrollmentResult
                 {
                     Status = 20,
-                    CARequestID = response.CertificateName.CertificateId,
+                    CARequestID = response.CertificateName?.CertificateId,//likley blank for devops. Cannot sync or track these items
                     Certificate = response.PemCertificate
                 };
             }
@@ -298,10 +306,44 @@ namespace Keyfactor.AnyGateway.Google
             Logger.Trace("Checking permissions for JSON license file");
             errors.AddRange(CheckEnvrionmentVariables());
 
+            Logger.Trace("Checking connectivity and CA type");
+            errors.AddRange(CheckCAConfig(connectionInfo));
+
             if (errors.Any())
             {
                 throw new Exception(String.Join("|", errors.ToArray()));
             }
+        }
+
+        private static IEnumerable<string> CheckCAConfig(Dictionary<string, object> connectionInfo)
+        {
+            List<string> returnValue = new List<string>();
+            try
+            {
+                var ca = CertificateAuthorityServiceClient.Create().GetCertificateAuthority(new GetCertificateAuthorityRequest
+                {
+                    CertificateAuthorityName = CertificateAuthorityName.FromProjectLocationCertificateAuthority(
+                        connectionInfo[PROJECT_ID_KEY] as string,
+                        connectionInfo[LOCATION_ID_KEY]as string,
+                        connectionInfo[CA_ID_KEY] as string
+                        )
+                });
+
+                if (ca.Tier == CertificateAuthority.Types.Tier.Devops)
+                {
+                    returnValue.Add($"{ca.Tier} is an unsupported CA configuration");
+                }
+            }
+            catch (RpcException gEx)
+            {
+                returnValue.Add($"Unable to connect to CA. Status Code: {gEx.StatusCode} | Status: {gEx.Status}");
+            }
+            catch (Exception ex)
+            {
+                returnValue.Add($"Unable to connect to CA.");
+            }
+
+            return returnValue;
         }
 
         public override void ValidateProductInfo(EnrollmentProductInfo productInfo, Dictionary<string, object> connectionInfo)
