@@ -128,7 +128,7 @@ This is the resource Id of the CA created using the [Google Cloud Console](https
 "CAConnection": {
     "ProjectId": "concise-frame-296019",
     "LocationId": "us-east1",
-    "CAId":"ca-enterprise-subordinate-sandbox-tls",
+    "CAId":"ca-enterprise-subordinate-sandbox-tls"
 }
 ```
 ## GatewayRegistration
