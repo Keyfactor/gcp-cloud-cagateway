@@ -53,8 +53,6 @@ namespace Keyfactor.AnyGateway.Google
             Logger.MethodEntry(ILogExtensions.MethodLogLevel.Debug);
             try
             {
-                //TODO: Determine if enrollment type changes behavior of the call to the CA?
-
                 GcpClient = CertificateAuthorityServiceClient.Create();
               
                 var parentAsTypedName = CertificateAuthorityName.FromProjectLocationCertificateAuthority(ProjectId, LocationId, CAId);
@@ -71,9 +69,6 @@ namespace Keyfactor.AnyGateway.Google
                     PemCsr = $"-----BEGIN NEW CERTIFICATE REQUEST-----\n{pemify(csr)}\n-----END NEW CERTIFICATE REQUEST-----",
                     Lifetime = Duration.FromTimeSpan(new TimeSpan(lifetimeInDays, 0, 0, 0, 0))
                 };
-
-                //TODO: https://googleapis.github.io/google-cloud-dotnet/docs/faq.html#how-can-i-trace-grpc-issues
-                //GrpcEnvironment.SetLogger(new GcpLogger());
 
                 DateTime now = DateTime.Now;
                 var createCertificateRequest = new CreateCertificateRequest() { 
