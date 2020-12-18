@@ -31,7 +31,17 @@ namespace Keyfactor.AnyGateway.Google
         private string LocationId { get; set; }
         private string CAId { get; set; }
 
-
+        /// <summary>
+        /// AnyGateway method to enroll for a certificate
+        /// </summary>
+        /// <param name="certificateDataReader">Database access to existing CA Certificates</param>
+        /// <param name="csr">base64 encoded string of the Certificate Request</param>
+        /// <param name="subject">Distinguised name based on the CST</param>
+        /// <param name="san">dns and/or ip SAN entries</param>
+        /// <param name="productInfo">Request Attributes and Product parameters from AnyGateway Config JSON file</param>
+        /// <param name="requestFormat"></param>
+        /// <param name="enrollmentType"></param>
+        /// <returns></returns>
         public override EnrollmentResult Enroll(ICertificateDataReader certificateDataReader, 
                                                 string csr, 
                                                 string subject, 
@@ -98,7 +108,11 @@ namespace Keyfactor.AnyGateway.Google
                 };
             }
         }
-
+        /// <summary>
+        /// AnyGateway method to get a single certificate's detail from the CA
+        /// </summary>
+        /// <param name="caRequestID">CA Id returned during inital synchronization</param>
+        /// <returns></returns>
         public override CAConnectorCertificate GetSingleRecord(string caRequestID)
         {
             Logger.MethodEntry(ILogExtensions.MethodLogLevel.Debug);
@@ -119,6 +133,10 @@ namespace Keyfactor.AnyGateway.Google
             }
         }
 
+        /// <summary>
+        /// AnyGateway method called before most AnyGateway functions
+        /// </summary>
+        /// <param name="configProvider">Existing configuration extracted from the AnyGateway database</param>
         public override void Initialize(ICAConnectorConfigProvider configProvider)
         {
             Logger.MethodEntry(ILogExtensions.MethodLogLevel.Debug);
@@ -135,12 +153,22 @@ namespace Keyfactor.AnyGateway.Google
             }
         }
 
+        /// <summary>
+        /// Certutil response to the certutil -ping [-config host\logical] command
+        /// </summary>
         public override void Ping()
         {
             Logger.MethodEntry(ILogExtensions.MethodLogLevel.Debug);
 
         }
 
+        /// <summary>
+        /// AnyGateway method to revoke a certificate
+        /// </summary>
+        /// <param name="caRequestID"></param>
+        /// <param name="hexSerialNumber"></param>
+        /// <param name="revocationReason"></param>
+        /// <returns></returns>
         public override int Revoke(string caRequestID, string hexSerialNumber, uint revocationReason)
         {
             Logger.MethodEntry(ILogExtensions.MethodLogLevel.Debug);
@@ -171,7 +199,13 @@ namespace Keyfactor.AnyGateway.Google
             }
         }
 
-
+        /// <summary>
+        /// AnyGateway method to syncronize Google CA Certificates
+        /// </summary>
+        /// <param name="certificateDataReader">Database access to the current certificates for the CA</param>
+        /// <param name="blockingBuffer"></param>
+        /// <param name="certificateAuthoritySyncInfo">Detail about the CA being synchronized</param>
+        /// <param name="cancelToken"></param>
         public override void Synchronize(ICertificateDataReader certificateDataReader,
                                          BlockingCollection<CAConnectorCertificate> blockingBuffer,
                                          CertificateAuthoritySyncInfo certificateAuthoritySyncInfo,
@@ -215,6 +249,49 @@ namespace Keyfactor.AnyGateway.Google
             }
         }
 
+        /// <summary>
+        /// AnyGateway method to validate connection detail (CAConnection section) during the Set-KeyfactorGatewayConfig cmdlet
+        /// </summary>
+        /// <param name="connectionInfo">CAConnection section of the AnyGateway JSON file</param>
+        public override void ValidateCAConnectionInfo(Dictionary<string, object> connectionInfo)
+        {
+            Logger.MethodEntry(ILogExtensions.MethodLogLevel.Debug);
+            //connectionInfo is the currently imported values
+            //CONFIG is the existing configuration from the initalize
+            List<string> errors = new List<string>();
+
+            Logger.Trace("Checking required CAConnection config");
+            errors.AddRange(CheckRequiredValues(connectionInfo, PROJECT_ID_KEY, LOCATION_ID_KEY, CA_ID_KEY));
+
+            Logger.Trace("Checking permissions for JSON license file");
+            errors.AddRange(CheckEnvrionmentVariables());
+
+            Logger.Trace("Checking connectivity and CA type");
+            errors.AddRange(CheckCAConfig(connectionInfo));
+
+            if (errors.Any())
+            {
+                throw new Exception(String.Join("|", errors.ToArray()));
+            }
+        }
+
+        /// <summary>
+        /// AnyGateway method to validate product info (Template section) during the Set-KeyfactorGatewayConfig cmdlet
+        /// </summary>
+        /// <param name="productInfo">Parameters section of the AnyGateway JSON file</param>
+        /// <param name="connectionInfo">CAConnection section of the AnyGateway JSON file</param>
+        public override void ValidateProductInfo(EnrollmentProductInfo productInfo, Dictionary<string, object> connectionInfo)
+        {
+            Logger.MethodEntry(ILogExtensions.MethodLogLevel.Debug);
+        }
+
+        #region Private Helper Methods
+        /// <summary>
+        /// Method to process Issued certificates from the Goocle CA
+        /// </summary>
+        /// <param name="responseList"><see cref="ListCertificatesResponse"/> from a full or incremental sync request to the Google CA </param>
+        /// <param name="blockingBuffer"></param>
+        /// <param name="cancelToken"></param>
         private void ProcessCertificateList(PagedEnumerable<ListCertificatesResponse, Certificate> responseList, BlockingCollection<CAConnectorCertificate> blockingBuffer, CancellationToken cancelToken)
         {
             Logger.MethodEntry(ILogExtensions.MethodLogLevel.Debug);
@@ -258,7 +335,12 @@ namespace Keyfactor.AnyGateway.Google
             }
             Logger.Info($"Total Certificates Processed: {totalCertsProcessed} | Total Pages Processed: {pagesProcessed}");
         }
-
+        /// <summary>
+        /// Method to process the Issuing Certificate of a Google CA
+        /// </summary>
+        /// <param name="ca"><see cref="CertificateAuthority"/> to process certificate from</param>
+        /// <param name="blockingBuffer">BlockingCollection provided by the Command platform for syncing CA certificates</param>
+        /// <param name="cancelToken"></param>
         private void ProcessCACertificateList(CertificateAuthority ca, BlockingCollection<CAConnectorCertificate> blockingBuffer, CancellationToken cancelToken)
         {
             Logger.MethodEntry(ILogExtensions.MethodLogLevel.Debug);
@@ -292,28 +374,11 @@ namespace Keyfactor.AnyGateway.Google
             } while (caCertsProcessed >= 1);
         }
 
-        public override void ValidateCAConnectionInfo(Dictionary<string, object> connectionInfo)
-        {
-            Logger.MethodEntry(ILogExtensions.MethodLogLevel.Debug);
-            //connectionInfo is the currently imported values
-            //CONFIG is the existing configuration from the initalize
-            List<string> errors = new List<string>();
-
-            Logger.Trace("Checking required CAConnection config");
-            errors.AddRange(CheckRequiredValues(connectionInfo, PROJECT_ID_KEY, LOCATION_ID_KEY, CA_ID_KEY));
-
-            Logger.Trace("Checking permissions for JSON license file");
-            errors.AddRange(CheckEnvrionmentVariables());
-
-            Logger.Trace("Checking connectivity and CA type");
-            errors.AddRange(CheckCAConfig(connectionInfo));
-
-            if (errors.Any())
-            {
-                throw new Exception(String.Join("|", errors.ToArray()));
-            }
-        }
-
+        /// <summary>
+        /// Validate CA Configuration by attempting to connect and validate <see cref="CertificateAuthority.Tier"/>
+        /// </summary>
+        /// <param name="connectionInfo">CAConnection Details object from the AnyGateway Config JSON file</param>
+        /// <returns></returns>
         private static IEnumerable<string> CheckCAConfig(Dictionary<string, object> connectionInfo)
         {
             List<string> returnValue = new List<string>();
@@ -339,19 +404,11 @@ namespace Keyfactor.AnyGateway.Google
             }
             catch (Exception ex)
             {
-                returnValue.Add($"Unable to connect to CA.");
+                returnValue.Add($"Unable to connect to CA. Detail: {ex.Message}");
             }
 
             return returnValue;
         }
-
-        public override void ValidateProductInfo(EnrollmentProductInfo productInfo, Dictionary<string, object> connectionInfo)
-        {
-            Logger.MethodEntry(ILogExtensions.MethodLogLevel.Debug);
-
-        }
-
-        #region Private Helper Methods
 
         /// <summary>
         /// Determines if the provided keys have been configured
@@ -374,7 +431,7 @@ namespace Keyfactor.AnyGateway.Google
         /// Determines if the AnyGateway service can read from the GOOGLE_APPLICATION_CREDENTIALS machine envrionment variable and read the contents of the 
         /// file.
         /// </summary>
-        /// <returns>List of error messages for items failing validation</returns>
+        /// <returns><see cref="List{string}"/> the contains any error messages for items failing validation</returns>
         private static List<string> CheckEnvrionmentVariables()
         {
             List<string> errors = new List<string>();
@@ -398,7 +455,7 @@ namespace Keyfactor.AnyGateway.Google
         /// Creates a Keyfactor AnyGateway Certificate Type from the GCP Certificate Type
         /// </summary>
         /// <param name="caCertificate"></param>
-        /// <returns></returns>
+        /// <returns><see cref="CAConnectorCertificate"/> parsed from a <see cref="Certificate"/> object</returns>
         private CAConnectorCertificate ProcessCAResponse(Certificate caCertificate)
         {
             Logger.MethodEntry(ILogExtensions.MethodLogLevel.Debug);
@@ -416,6 +473,9 @@ namespace Keyfactor.AnyGateway.Google
 
         }
 
+        /// <summary>
+        /// Add new line every 64 characters to propertly format a base64 string as PEM
+        /// </summary>
         private static Func<String, String> pemify = (ss => ss.Length <= 64 ? ss : ss.Substring(0, 64) + "\n" + pemify(ss.Substring(64)));
 
         #endregion
