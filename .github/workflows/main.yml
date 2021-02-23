@@ -26,6 +26,10 @@ jobs:
       # Configures msbuild path envrionment
       - name: setup-msbuild
         uses: microsoft/setup-msbuild@v1
+      
+      - name: restore packages
+        run: |
+          nuget restore $Env:GITHUB_WORKSPACE\src\GoogleCAProxy\GoogleCAProxy.sln
 
       # Runs a set of commands using the runners shell
       - name: Execute MSBuild Commands
