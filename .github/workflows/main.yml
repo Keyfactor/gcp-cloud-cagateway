@@ -39,11 +39,18 @@ jobs:
         
       - name: Archive Files
         run: |
-          Compress-Archive -Path $Env:GITHUB_WORKSPACE\src\GoogleCAProxy\bin\Release\*.dll,$Env:GITHUB_WORKSPACE\src\GoogleCAProxy\bin\Release\app.config -DestinationPath C:\tools\testarchive.zip
-      #- name: Upload File
-      #  uses: actions/upload-artifact@v2.2.2
-      #  with:
-      #   path: GoogleCAProxy\bin\Release\GoogleCAProxy.dll
+          Compress-Archive -Path $Env:GITHUB_WORKSPACE\src\GoogleCAProxy\bin\Release\*.dll,$Env:GITHUB_WORKSPACE\src\GoogleCAProxy\bin\Release\app.config -DestinationPath C:\tools\google-cloudca-gateway.zip
+
+      - name: Upload a Build Artifact
+        uses: actions/upload-artifact@v2.2.2
+        with:
+          # Artifact name
+          name: google-cloudca-gateway.zip
+          # A file, directory or wildcard pattern that describes what to upload
+          path: C:\tools\google-cloudca-gateway.zip
+          # The desired behavior if no files are found using the provided path.
+          if-no-files-found: error # optional, default is warn
+
       
       # Clean up local directory
 
