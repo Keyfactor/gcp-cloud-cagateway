@@ -37,7 +37,7 @@ jobs:
       - name: Execute MSBuild Commands
         run: |
           MSBuild.exe -?
-          MSBuild.exe $Env:GITHUB_WORKSPACE\src\GoogleCAProxy\GoogleCAProxy.sln /p:Configuration=Release
+          MSBuild.exe $Env:GITHUB_WORKSPACE\src\GoogleCAProxy\GoogleCAProxy.sln /p:Configuration=Release -t:restore
         
       - name: Upload File
         uses: actions/upload-artifact@v2.2.2
