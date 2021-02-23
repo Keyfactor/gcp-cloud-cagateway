@@ -37,13 +37,14 @@ jobs:
         run: |
           MSBuild.exe $Env:GITHUB_WORKSPACE\src\GoogleCAProxy\GoogleCAProxy.sln -p:RestorePackagesConfig=true -p:Configuration=Release 
         
+      - name: Archive Files
+        run: |
+          Compress-Archive -Path $Env:GITHUB_WORKSPACE\src\GoogleCAProxy\bin\Release\*.dll,$Env:GITHUB_WORKSPACE\src\GoogleCAProxy\bin\Release\app.config -DestinationPath C:\tools\testarchive.zip
       #- name: Upload File
       #  uses: actions/upload-artifact@v2.2.2
       #  with:
       #   path: GoogleCAProxy\bin\Release\GoogleCAProxy.dll
       
       # Clean up local directory
-      - name: clean up _work
-        run: |
-          del /F/Q/S *.* > NUL
+
           
