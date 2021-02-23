@@ -4,10 +4,8 @@ name: CI
 
 # Controls when the action will run. 
 on:
-  # Triggers the workflow on push or pull request events but only for the main branch
+  # Triggers the workflow on push
   push:
-    branches: [ main ]
-  pull_request:
     branches: [ main ]
 
   # Allows you to run this workflow manually from the Actions tab
@@ -24,10 +22,6 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
-
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo Hello, world!
       
       # Configures msbuild path envrionment
       - name: setup-msbuild
@@ -36,10 +30,9 @@ jobs:
       # Runs a set of commands using the runners shell
       - name: Execute MSBuild Commands
         run: |
-          MSBuild.exe -?
-          MSBuild.exe $Env:GITHUB_WORKSPACE\src\GoogleCAProxy\GoogleCAProxy.sln /p:Configuration=Release -t:restore
+          MSBuild.exe $Env:GITHUB_WORKSPACE\src\GoogleCAProxy\GoogleCAProxy.sln -r /p:Configuration=Release
         
-      - name: Upload File
-        uses: actions/upload-artifact@v2.2.2
-        with:
-          path: GoogleCAProxy\bin\Release\GoogleCAProxy.dll
+      #- name: Upload File
+      #  uses: actions/upload-artifact@v2.2.2
+      #  with:
+      #   path: GoogleCAProxy\bin\Release\GoogleCAProxy.dll
