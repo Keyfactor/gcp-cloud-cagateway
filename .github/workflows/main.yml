@@ -27,14 +27,10 @@ jobs:
       - name: setup-msbuild
         uses: microsoft/setup-msbuild@v1
       
-      - name: restore packages
-        run: |
-          nuget restore $Env:GITHUB_WORKSPACE\src\GoogleCAProxy\GoogleCAProxy.sln
-
       # Runs a set of commands using the runners shell
       - name: Execute MSBuild Commands
         run: |
-          MSBuild.exe $Env:GITHUB_WORKSPACE\src\GoogleCAProxy\GoogleCAProxy.sln -r /p:Configuration=Release
+          MSBuild.exe $Env:GITHUB_WORKSPACE\src\GoogleCAProxy\GoogleCAProxy.sln -p:RestorePackagesConfig=true -p:Configuration=Release 
         
       #- name: Upload File
       #  uses: actions/upload-artifact@v2.2.2
