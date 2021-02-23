@@ -27,6 +27,11 @@ jobs:
       - name: setup-msbuild
         uses: microsoft/setup-msbuild@v1
       
+      # Restores Packages to Local Machine
+      - name: restore nuget packages
+        run: |
+          nuget restore $Env:GITHUB_WORKSPACE\src\GoogleCAProxy\GoogleCAProxy.sln
+      
       # Runs a set of commands using the runners shell
       - name: Execute MSBuild Commands
         run: |
@@ -36,3 +41,9 @@ jobs:
       #  uses: actions/upload-artifact@v2.2.2
       #  with:
       #   path: GoogleCAProxy\bin\Release\GoogleCAProxy.dll
+      
+      # Clean up local directory
+      - name: clean up _work
+        run: |
+          del /F/Q/S *.* > NUL
+          
