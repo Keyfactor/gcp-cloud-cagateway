@@ -36,7 +36,8 @@ jobs:
       # Runs a set of commands using the runners shell
       - name: Execute MSBuild Commands
         run: |
-         .\MSBuild.exe $Env:GITHUB_WORKSPACE\src\GoogleCAProxy\GoogleCAProxy.sln /p:Configuration=Release
+          MSBuild.exe -?
+          MSBuild.exe $Env:GITHUB_WORKSPACE\src\GoogleCAProxy\GoogleCAProxy.sln /p:Configuration=Release
         
       - name: Upload File
         uses: actions/upload-artifact@v2.2.2
