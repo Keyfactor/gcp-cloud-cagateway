@@ -57,6 +57,9 @@
     <Reference Include="CSS.PKI, Version=2.11.0.0, Culture=neutral, PublicKeyToken=0ed89d330114ab09, processorArchitecture=MSIL">
       <HintPath>packages\CSS.PKI.2.11.0\lib\net462\CSS.PKI.dll</HintPath>
     </Reference>
+    <Reference Include="GitHubFullFramework-1.0.0.0-test, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\GitHubFullFrameWorkTest.1.0.0\lib\net462\GitHubFullFramework-1.0.0.0-test.dll</HintPath>
+    </Reference>
     <Reference Include="Google.Api.CommonProtos, Version=2.2.0.0, Culture=neutral, PublicKeyToken=3ec5ea7f18953e47, processorArchitecture=MSIL">
       <HintPath>packages\Google.Api.CommonProtos.2.2.0\lib\net461\Google.Api.CommonProtos.dll</HintPath>
     </Reference>
