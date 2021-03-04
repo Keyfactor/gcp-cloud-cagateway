@@ -32,7 +32,7 @@ namespace Keyfactor.AnyGateway.Google
         private string CAId { get; set; }
 
         /// <summary>
-        /// AnyGateway method to enroll for a certificate
+        /// AnyGateway method to enroll for a certificate from Google CA
         /// </summary>
         /// <param name="certificateDataReader">Database access to existing CA Certificates</param>
         /// <param name="csr">base64 encoded string of the Certificate Request</param>
