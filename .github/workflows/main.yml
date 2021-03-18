@@ -71,7 +71,7 @@ jobs:
           name: google-cloudca-gateway.zip
           # A file, directory or wildcard pattern that describes what to upload
           path: |
-            ${{ github.workspace }}\zip\${{ github.repository }}.zip #Keyfactor\repo_name format. 
+            ${{ github.workspace }}\zip\${{ github.repository }}.zip
           # The desired behavior if no files are found using the provided path.
           if-no-files-found: error # optional, default is warn
 
