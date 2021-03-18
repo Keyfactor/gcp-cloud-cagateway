@@ -28,7 +28,7 @@ jobs:
 
       - name: Parse Release Name
         run: |
-            $relName = $(${{ github.ref }}).Split("/");
+            $relName = "${{ github.ref }}".Split("/");
             echo "Parsed Release Name: $($relName[-1])"
             echo "RELEASE_NAME=$($relName[-1])" | Out-File $env:GITHUB_ENV -Encoding utf8 -Append
 
