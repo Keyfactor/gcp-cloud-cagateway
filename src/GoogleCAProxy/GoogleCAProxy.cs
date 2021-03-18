@@ -59,7 +59,7 @@ namespace Keyfactor.AnyGateway.Google
 
                 var template = GcpClient.GetCertificateTemplate(productInfo.ProductID);
 
-                Logger.Trace($"Template {template.Name} found for enrollment.");              
+                Logger.Trace($"Template {template.Name} found for enrollment");              
               
                 var caPoolAsTypedName = CaPoolName.FromProjectLocationCaPool(ProjectId, LocationId, CAPoolId);
                 Logger.Trace($"Enroll at CA Pool: {caPoolAsTypedName}");
