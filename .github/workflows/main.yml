@@ -71,17 +71,23 @@ jobs:
           name: google-cloudca-gateway.zip
           # A file, directory or wildcard pattern that describes what to upload
           path: |
-            ${{ github.workspace }}\zip\${{ github.repository }}.zip
+            ${{ github.workspace }}\zip\${{ github.repository }}.zip #Keyfactor\repo_name format. 
           # The desired behavior if no files are found using the provided path.
           if-no-files-found: error # optional, default is warn
-          
+
+      - name: Parse Release Name
+        run: |
+            $relName = ${{ github.ref }}.Split("/");
+            echo "Parsed Release Name: $($relName[-1])"
+            echo "RELEASE_NAME=$($relName[-1])" | Out-File $env:GITHUB_ENV -Encoding utf8 -Append
+
       - name: Create Release
         id: create_release
         uses: zendesk/action-create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          release_name: Release ${{ github.ref }}
+          release_name: Release ${{ $Env:RELEASE_NAME }}
           body: |
             Changes in this Release
             - First Change
