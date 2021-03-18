@@ -25,6 +25,12 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
+      - name: Find Solution File
+        id: find_sln
+        run: |
+            $slnPath = (Get-ChildItem -Include *.sln -File -Recurse).fullname
+            echo '::set-output name=SOLUTION_PATH::$slnPath'
+        
       - uses: actions/setup-dotnet@v1
         with:
             dotnet-version: '3.1.x' # SDK Version to use; x will use the latest version of the 3.1 channel      
@@ -41,7 +47,7 @@ jobs:
       # Restores Packages to Local Machine
       - name: restore nuget packages
         run: |
-          nuget restore $Env:GITHUB_WORKSPACE\src\GoogleCAProxy\GoogleCAProxy.sln
+          nuget restore ${{ steps.find_sln.outputs.SOLUTION_PATH  }}
       
       # Runs a set of commands using the runners shell
       - name: Execute MSBuild Commands
@@ -54,49 +60,49 @@ jobs:
            Compress-Archive -Path ${{ github.workspace }}\src\GoogleCAProxy\bin\Release\*.dll,${{ github.workspace }}\src\GoogleCAProxy\bin\Release\app.config -DestinationPath ${{ github.workspace }}\zip\$Env:GITHUB_REPOSITORY.zip -Force
       
 
-      - name: Upload a Build Artifact
-        uses: actions/upload-artifact@v2.2.2
-        with:
-          # Artifact name
-          name: google-cloudca-gateway.zip
-          # A file, directory or wildcard pattern that describes what to upload
-          path: |
-            ${{ github.workspace }}\zip\${{ github.repository }}.zip
-          # The desired behavior if no files are found using the provided path.
-          if-no-files-found: error # optional, default is warn
+    #  - name: Upload a Build Artifact
+    #    uses: actions/upload-artifact@v2.2.2
+    #    with:
+    #      # Artifact name
+    #      name: google-cloudca-gateway.zip
+    #      # A file, directory or wildcard pattern that describes what to upload
+    #      path: |
+    #        ${{ github.workspace }}\zip\${{ github.repository }}.zip
+    #      # The desired behavior if no files are found using the provided path.
+    #      if-no-files-found: error # optional, default is warn
           
-      - name: Create Release
-        id: create_release
-        uses: zendesk/action-create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          release_name: Release ${{ github.ref }}
-          body: |
-            Changes in this Release
-            - First Change
-            - Second Change
-          draft: false
-          prerelease: true
-          prerelease_suffix: pre
-          auto_increment_type: prerelease
-          tag_schema: semantic
+    #  - name: Create Release
+    #    id: create_release
+    #    uses: zendesk/action-create-release@v1
+    #    env:
+    #      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    #    with:
+    #      release_name: Release ${{ github.ref }}
+    #      body: |
+    #        Changes in this Release
+    #        - First Change
+    #        - Second Change
+    #      draft: false
+    #      prerelease: true
+    #      prerelease_suffix: pre
+    #      auto_increment_type: prerelease
+    #      tag_schema: semantic
 
     #  - name: Download ZIP
     #    uses: actions/download-artifact@v2
     #    with:
     #      name: google-cloudca-gateway.zip
       
-      - name: Upload Release Asset (x64)
-        id: upload-release-asset-x64
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ github.workspace }}\zip\${{ github.repository }}.zip
-          asset_name: google-cloudca-gateway.zip
-          asset_content_type: application/zip          
+    #  - name: Upload Release Asset (x64)
+    #    id: upload-release-asset-x64
+    #    uses: actions/upload-release-asset@v1
+    #    env:
+    #      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    #    with:
+    #      upload_url: ${{ steps.create_release.outputs.upload_url }}
+    #      asset_path: ${{ github.workspace }}\zip\${{ github.repository }}.zip
+    #      asset_name: google-cloudca-gateway.zip
+    #      asset_content_type: application/zip          
 
       
       # Clean up local directory
