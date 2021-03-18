@@ -50,7 +50,7 @@ jobs:
 
       - name: Archive Files
         run: |
-           md ${{ github.workspace }}\zip\$GITHUB_REPOSITORY
+           md ${{ github.workspace }}\zip\$Env:GITHUB_REPOSITORY
            Compress-Archive -Path ${{ github.workspace }}\src\GoogleCAProxy\bin\Release\*.dll,${{ github.workspace }}\src\GoogleCAProxy\bin\Release\app.config -DestinationPath ${{ github.workspace }}\zip\$Env:GITHUB_REPOSITORY.zip -Force
       
 
