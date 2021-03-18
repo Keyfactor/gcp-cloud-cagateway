@@ -28,8 +28,11 @@ jobs:
       - name: Find Solution File
         id: find_sln
         run: |
+            echo "Working Path: ${Env:GITHUB_WORKSPACE}"
+            echo "Find SLN file"
             $slnPath = (Get-ChildItem -Include *.sln -File -Recurse).fullname
-            echo '::set-output name=SOLUTION_PATH::$slnPath'
+            echo "Solution File Path: ${slnPath}"
+            echo '::set-output name=SOLUTION_PATH::${slnPath}'
         
       - uses: actions/setup-dotnet@v1
         with:
