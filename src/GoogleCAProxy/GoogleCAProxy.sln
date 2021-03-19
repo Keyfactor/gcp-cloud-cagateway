@@ -8,7 +8,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5505EA55-BEBD-4DBC-9ED2-448CFB9BCD37}"
 	ProjectSection(SolutionItems) = preProject
 		..\..\.gitignore = ..\..\.gitignore
-		..\..\.github\workflows\main.yml = ..\..\.github\workflows\main.yml
+		..\..\.github\workflows\keyfactor-extension-prerelease.yml = ..\..\.github\workflows\keyfactor-extension-prerelease.yml
+		keyfactor-extension-release.yml = keyfactor-extension-release.yml
 		..\..\README.md = ..\..\README.md
 	EndProjectSection
 EndProject
