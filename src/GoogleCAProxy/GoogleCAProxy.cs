@@ -241,7 +241,7 @@ namespace Keyfactor.AnyGateway.Google
                     syncRequest.Filter = $"update_time >= {lastSyncTime}";
                 }
 
-                var responseList = GcpClient.ListCertificates(syncRequest); //TODO: How does this perform with load?
+                var responseList = GcpClient.ListCertificates(syncRequest); //TODO How does this perform with load?
                 ProcessCertificateList(responseList, blockingBuffer, cancelToken);
             }
             catch (RpcException gEx)
