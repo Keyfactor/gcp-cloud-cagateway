@@ -31,7 +31,7 @@ jobs:
             echo "Setup Envrionment Variables for Workflow"
             echo "Working Path: ${Env:GITHUB_WORKSPACE}"
             $slnPath = (Get-ChildItem -Include *.sln -File -Recurse).fullname
-            $relName = "${{ github.ref }}".Split("/")
+            $relName = "${{ github.ref }}".Split("-")
             $repoName = "${{ github.repository }}".Split("/")
             echo "Solution File Path: ${slnPath}"
             echo "SOLUTION_PATH=${slnPath}" | Out-File $env:GITHUB_ENV -Encoding utf8 -Append
@@ -76,7 +76,8 @@ jobs:
       - name: Increment Assembly Version
         run: |
             $VersionRegex = "\d+\.\d+\.\d+"
-            $assemlyFilePath = (Get-ChildItem -Include AssemblyInfo.cs -File -Recurse).fullname
+            #need to deal with multiple cs files for test harnesses, etc
+            $assemlyFilePath = "${{ github.workspace }}\src\GoogleCAProxy\Properties\AssemblyInfo.cs"
             $filecontent = Get-Content($assemlyFilePath)
             $newVer = "${{ steps.create_release.outputs.current_tag }}".TrimStart('v')
             attrib $assemlyFilePath -r
@@ -90,7 +91,7 @@ jobs:
         if: ${{ success() }}
         run: |
            md ${{ github.workspace }}\zip\Keyfactor
-           Compress-Archive -Path ${{ github.workspace }}\GoogleCAProxy\bin\Prerelease\*.dll,${{ github.workspace }}\GoogleCAProxy\bin\Prerelease\app.config -DestinationPath ${{ github.workspace }}\zip\Keyfactor\$Env:REPO_NAME.zip -Force      
+           Compress-Archive -Path ${{ github.workspace }}\src\GoogleCAProxy\bin\Prerelease\*.dll,${{ github.workspace }}\src\GoogleCAProxy\bin\Prerelease\app.config -DestinationPath ${{ github.workspace }}\zip\Keyfactor\$Env:REPO_NAME.zip -Force      
       
       - name: Upload Release Asset (x64)
         if: ${{ success() }}
