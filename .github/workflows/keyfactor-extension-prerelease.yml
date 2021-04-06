@@ -79,7 +79,7 @@ jobs:
             #need to deal with multiple cs files for test harnesses, etc
             $assemlyFilePath = "${{ github.workspace }}\src\GoogleCAProxy\Properties\AssemblyInfo.cs"
             $filecontent = Get-Content($assemlyFilePath)
-            $newVer = "${{ steps.create_release.outputs.current_tag }}".TrimStart('v')
+            $newVer = "${{ steps.create_release.outputs.current_tag }}".TrimStart('v').TrimEnd('-beta')
             attrib $assemlyFilePath -r
             $filecontent -replace $VersionRegex, $newVer | Out-File $assemlyFilePath
       
