@@ -72,6 +72,7 @@ jobs:
           prerelease: true
           auto_increment_type: patch
           tag_schema: semantic
+          target_commitish: ${{ github.sha }}
       
       #update version number of AssemblyInfo.cs file
       - name: Increment Assembly Version
