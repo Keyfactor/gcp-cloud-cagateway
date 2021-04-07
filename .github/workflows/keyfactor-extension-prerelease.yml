@@ -61,7 +61,7 @@ jobs:
       - name: Create Release
         id: create_release
         #uses: zendesk/action-create-release@v1
-        uses: keyfactor/action-create-release@v1.1
+        uses: keyfactor/action-create-release@786b73035fa09790f9eb11bb86834a6d7af1c256
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -72,7 +72,7 @@ jobs:
           prerelease: true
           auto_increment_type: patch
           tag_schema: semantic
-          target_commitish: ${{ github.sha }}
+          commitish: ${{ github.sha }}
       
       #update version number of AssemblyInfo.cs file
       - name: Increment Assembly Version
