@@ -34,6 +34,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Prerelease|AnyCPU'">
+    <OutputPath>bin\Prerelease\</OutputPath>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="CAProxy.AnyGateway.Core, Version=20.9.0.0, Culture=neutral, PublicKeyToken=0ed89d330114ab09, processorArchitecture=MSIL">
       <HintPath>..\GoogleCAProxy\packages\Keyfactor.AnyGateway.SDK.20.9.0\lib\net462\CAProxy.AnyGateway.Core.dll</HintPath>

@@ -8,11 +8,13 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using Google.Cloud.Security.PrivateCA.V1;
+//TODO Update for V1
+using Google.Cloud.Security.PrivateCA.V1Beta1;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Google.Api.Gax;
 using CSS.Common.Logging;
+
 
 namespace Keyfactor.AnyGateway.Google
 {
@@ -28,9 +30,21 @@ namespace Keyfactor.AnyGateway.Google
         private CertificateAuthorityServiceClient GcpClient { get; set; }
         private ICAConnectorConfigProvider Config { get; set; }
 
+        /// <summary>
+        /// Project Location ID from the Google Cloud Console for the Private CA Project
+        /// </summary>
         private string ProjectId { get; set; }
+        /// <summary>
+        /// Location ID (i.e. us-east1) from the Google Cloud Console for the Private CA deployment
+        /// </summary>
         private string LocationId { get; set; }
+        /// <summary>
+        /// CA Resource ID from the Google Cloud Console for the Private CA to be monitored. To be marked obsolete at GA
+        /// </summary>
         private string CAId { get; set; }
+        /// <summary>
+        /// CA Pool Resource ID from the Google Cloud Console.  This will only be used in the V1 release
+        /// </summary>
         private string CAPoolId { get; set; }
 
         /// <summary>
@@ -55,14 +69,20 @@ namespace Keyfactor.AnyGateway.Google
             Logger.MethodEntry(ILogExtensions.MethodLogLevel.Debug);
             try
             {
+                
                 GcpClient = CertificateAuthorityServiceClient.Create();
 
+                /**TODO: This implementation detail will be part of V1. 
                 var template = GcpClient.GetCertificateTemplate(productInfo.ProductID);
-
+                
                 Logger.Trace($"Template {template.Name} found for enrollment");              
               
                 var caPoolAsTypedName = CaPoolName.FromProjectLocationCaPool(ProjectId, LocationId, CAPoolId);
                 Logger.Trace($"Enroll at CA Pool: {caPoolAsTypedName}");
+                **/
+
+
+                CertificateAuthorityName parentAsTypedName = new CertificateAuthorityName(ProjectId, LocationId, CAId);
 
                 if (!int.TryParse(productInfo.ProductParameters[LIFETIME_KEY], out int lifetimeInDays))
                 {
@@ -78,8 +98,8 @@ namespace Keyfactor.AnyGateway.Google
 
                 DateTime now = DateTime.Now;
                 var createCertificateRequest = new CreateCertificateRequest() { 
-                    ParentAsCaPoolName = caPoolAsTypedName,
-                    //ParentAsCertificateAuthorityName = parentAsTypedName,
+                    //ParentAsCaPoolName = caPoolAsTypedName,
+                    ParentAsCertificateAuthorityName = parentAsTypedName,
                     Certificate = certificate,
                     //RequestId="",//this needs to be durable between reties 
                     CertificateId = $"{now:yyyy}{now:MM}{now:dd}-{now:HH}{now:mm}{now:ss}"//ID is required for Enterprise tier CAs and ignored for other.  
@@ -221,8 +241,8 @@ namespace Keyfactor.AnyGateway.Google
 
                 //For sync we still need to specify the CA ID since the pool will not provide a list of certs.  
                 //Do we have a CA in Keyfactor for each even thought issuance and revocation will be pool level? Probably
-                CertificateAuthorityName caName = CertificateAuthorityName.FromProjectLocationCaPoolCertificateAuthority(ProjectId, LocationId, CAPoolId, CAId);
-
+                //CertificateAuthorityName caName = CertificateAuthorityName.FromProjectLocationCaPoolCertificateAuthority(ProjectId, LocationId, CAPoolId, CAId);
+                CertificateAuthorityName caName = CertificateAuthorityName.FromProjectLocationCertificateAuthority(ProjectId, LocationId, CAId);
                 if (certificateAuthoritySyncInfo.DoFullSync)
                 {
                     var ca = GcpClient.GetCertificateAuthority(caName);
@@ -391,17 +411,24 @@ namespace Keyfactor.AnyGateway.Google
             {
                 var ca = CertificateAuthorityServiceClient.Create().GetCertificateAuthority(new GetCertificateAuthorityRequest
                 {
-                    CertificateAuthorityName = CertificateAuthorityName.FromProjectLocationCaPoolCertificateAuthority(
+                    //CertificateAuthorityName = CertificateAuthorityName.FromProjectLocationCaPoolCertificateAuthority(
+                    //    connectionInfo[PROJECT_ID_KEY] as string,
+                    //    connectionInfo[LOCATION_ID_KEY]as string,
+                    //    connectionInfo[CA_POOL_ID_KEY] as string,
+                    //    connectionInfo[CA_ID_KEY] as string
+                    //    )
+
+                    CertificateAuthorityName = CertificateAuthorityName.FromProjectLocationCertificateAuthority(
                         connectionInfo[PROJECT_ID_KEY] as string,
-                        connectionInfo[LOCATION_ID_KEY]as string,
-                        connectionInfo[CA_POOL_ID_KEY] as string,
+                        connectionInfo[LOCATION_ID_KEY] as string,
                         connectionInfo[CA_ID_KEY] as string
                         )
                 });
 
-                if (ca.Tier == CaPool.Types.Tier.Devops)
+//              if (ca.Tier == CaPool.Types.Tier.Devops)
+                if (ca.Tier == CertificateAuthority.Types.Tier.Devops)
                 {
-                    returnValue.Add($"{ca.Tier} is an unsupported CA configuration");
+                returnValue.Add($"{ca.Tier} is an unsupported CA configuration");
                 }
             }
             catch (RpcException gEx)
