@@ -8,8 +8,7 @@ on:
   push:
     #only run this workflow when pushing to a branch that contains a release number. ignore -pre
     branches: 
-        - 'release/v[12].[0-9]+.[0-9]+' 
-        - '!release/v*-pre*' 
+        - 'release-[1-9].[0-9]+.[0-9]+' 
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -32,7 +31,7 @@ jobs:
             echo "Setup Envrionment Variables for Workflow"
             echo "Working Path: ${Env:GITHUB_WORKSPACE}"
             $slnPath = (Get-ChildItem -Include *.sln -File -Recurse).fullname
-            $relName = "${{ github.ref }}".Split("/")
+            $relName = "${{ github.ref }}".Split("-")
             $repoName = "${{ github.repository }}".Split("/")
             echo "Solution File Path: ${slnPath}"
             echo "SOLUTION_PATH=${slnPath}" | Out-File $env:GITHUB_ENV -Encoding utf8 -Append
@@ -59,28 +58,6 @@ jobs:
         run: |
           nuget restore ${{ env.SOLUTION_PATH  }}
       
-      # Runs a set of commands using the runners shell
-      - name: Execute MSBuild Commands
-        run: |
-          MSBuild.exe $Env:SOLUTION_PATH -p:RestorePackagesConfig=true -p:Configuration=Release 
-
-      - name: Archive Files
-        run: |
-           md ${{ github.workspace }}\zip\Keyfactor
-           Compress-Archive -Path ${{ github.workspace }}\src\GoogleCAProxy\bin\Release\*.dll,${{ github.workspace }}\src\GoogleCAProxy\bin\Release\app.config -DestinationPath ${{ github.workspace }}\zip\Keyfactor\$Env:REPO_NAME.zip -Force
-      
-
-      - name: Upload a Build Artifact
-        uses: actions/upload-artifact@v2.2.2
-        with:
-          # Artifact name
-          name: ${{ env.REPO_NAME}}.zip
-          # A file, directory or wildcard pattern that describes what to upload
-          path: |
-            ${{ github.workspace }}\zip\Keyfactor\${{ env.REPO_NAME}}.zip
-          # The desired behavior if no files are found using the provided path.
-          if-no-files-found: error # optional, default is warn
-
       - name: Create Release
         id: create_release
         uses: zendesk/action-create-release@v1
@@ -89,15 +66,35 @@ jobs:
         with:
           release_name: Release ${{ env.RELEASE_NAME  }}
           body: |
-            Changes in this Release
-            - First Change
-            - Second Change
+            [Changelog](../CHANGELOG.MD)
           draft: false
           prerelease: false
           auto_increment_type: patch
           tag_schema: semantic
       
+      #update version number of AssemblyInfo.cs file
+      - name: Increment Assembly Version
+        run: |
+            $VersionRegex = "\d+\.\d+\.\d+"
+            #need to deal with multiple cs files for test harnesses, etc
+            $assemlyFilePath = "${{ github.workspace }}\src\GoogleCAProxy\Properties\AssemblyInfo.cs"
+            $filecontent = Get-Content($assemlyFilePath)
+            $newVer = "${{ steps.create_release.outputs.current_tag }}".TrimStart('v').TrimEnd('-beta')
+            attrib $assemlyFilePath -r
+            $filecontent -replace $VersionRegex, $newVer | Out-File $assemlyFilePath
+      
+      - name: Execute MSBuild Commands
+        run: |
+          MSBuild.exe $Env:SOLUTION_PATH -p:RestorePackagesConfig=false -p:Configuration=Release       
+      
+      - name: Archive Files
+        if: ${{ success() }}
+        run: |
+           md ${{ github.workspace }}\zip\Keyfactor
+           Compress-Archive -Path ${{ github.workspace }}\src\GoogleCAProxy\bin\Release\*.dll,${{ github.workspace }}\src\GoogleCAProxy\bin\Release\app.config -DestinationPath ${{ github.workspace }}\zip\Keyfactor\$Env:REPO_NAME.zip -Force      
+      
       - name: Upload Release Asset (x64)
+        if: ${{ success() }}
         id: upload-release-asset-x64
         uses: actions/upload-release-asset@v1
         env:
@@ -105,5 +102,14 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ${{ github.workspace }}\zip\Keyfactor\${{ env.REPO_NAME}}.zip
-          asset_name: ${{ env.REPO_NAME}}.zip
+          asset_name: ${{ env.REPO_NAME}}_${{ steps.create_release.outputs.current_tag }}.zip
           asset_content_type: application/zip                 
+      
+      - name: On Failure Remove Tags and Release
+        if: ${{ failure() }}
+        uses: dev-drprasad/delete-tag-and-release@v0.2.0
+        with:
+            delete_release: true # default: false
+            tag_name: ${{ steps.create_release.outputs.current_tag }}
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}           

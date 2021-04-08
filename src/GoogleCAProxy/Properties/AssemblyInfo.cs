@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("GoogleCAProxy")]
 [assembly: AssemblyDescription("Keyfactor AnyGateway Implementation for the Google Cloud Private CA")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Keyfactor, Inc.")]
+[assembly: AssemblyCompany("Keyfactor, Inc")]
 [assembly: AssemblyProduct("Keyfactor AnyGateway")]
 [assembly: AssemblyCopyright("Copyright ©  2020")]
 [assembly: AssemblyTrademark("")]
