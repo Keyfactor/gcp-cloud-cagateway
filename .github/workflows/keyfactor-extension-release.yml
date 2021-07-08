@@ -8,7 +8,7 @@ on:
   push:
     #only run this workflow when pushing to a branch that contains a release number. ignore -pre
     branches: 
-        - 'release-[1-9].[0-9]+.[0-9]+' 
+        - 'release-[1-9].[0-9]+' 
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -47,7 +47,7 @@ jobs:
         
       - name: Add Package Source
         run: |
-          dotnet nuget add source https://nuget.pkg.github.com/Keyfactor/index.json -n github -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text
+          dotnet nuget add source https://nuget.pkg.github.com/Keyfactor/index.json -n github -u ${{ github.actor }} -p ${{ secrets.BUILD_PACKAGE_ACCESS }} --store-password-in-clear-text
       
       # Configures msbuild path envrionment
       - name: setup-msbuild
@@ -64,9 +64,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          release_name: Release ${{ env.RELEASE_NAME  }}
+          release_name: Release 1.0
           body: |
-            [Changelog](../CHANGELOG.MD)
+            [Changelog](../main/CHANGELOG.md)
           draft: false
           prerelease: false
           auto_increment_type: patch
@@ -85,7 +85,7 @@ jobs:
       
       - name: Execute MSBuild Commands
         run: |
-          MSBuild.exe $Env:SOLUTION_PATH -p:RestorePackagesConfig=false -p:Configuration=Release       
+          MSBuild.exe $Env:SOLUTION_PATH -p:RestorePackagesConfig=true -p:Configuration=Release       
       
       - name: Archive Files
         if: ${{ success() }}
