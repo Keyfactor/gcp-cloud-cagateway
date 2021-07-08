@@ -8,7 +8,7 @@ on:
   push:
     #only run this workflow when pushing to a branch that contains a release number. ignore -pre
     branches: 
-        - 'release-[1-9].[0-9]+.[0-9]+' 
+        - 'release-[1-9].[0-9]+' 
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -64,9 +64,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          release_name: Release ${{ env.RELEASE_NAME  }}
+          release_name: Release 1.0
           body: |
-            [Changelog](../CHANGELOG.MD)
+            [Changelog](../main/CHANGELOG.md)
           draft: false
           prerelease: false
           auto_increment_type: patch
