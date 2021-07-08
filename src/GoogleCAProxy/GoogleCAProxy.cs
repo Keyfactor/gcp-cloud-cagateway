@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 //TODO Update for V1
-using Google.Cloud.Security.PrivateCA.V1Beta1;
+using Google.Cloud.Security.PrivateCA.V1;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Google.Api.Gax;
@@ -69,39 +69,34 @@ namespace Keyfactor.AnyGateway.Google
             Logger.MethodEntry(ILogExtensions.MethodLogLevel.Debug);
             try
             {
-                
-                GcpClient = CertificateAuthorityServiceClient.Create();
 
-                /**TODO: This implementation detail will be part of V1. 
+                GcpClient = BuildClient();
+                
                 var template = GcpClient.GetCertificateTemplate(productInfo.ProductID);
                 
                 Logger.Trace($"Template {template.Name} found for enrollment");              
               
                 var caPoolAsTypedName = CaPoolName.FromProjectLocationCaPool(ProjectId, LocationId, CAPoolId);
-                Logger.Trace($"Enroll at CA Pool: {caPoolAsTypedName}");
-                **/
 
-
-                CertificateAuthorityName parentAsTypedName = new CertificateAuthorityName(ProjectId, LocationId, CAId);
+                Logger.Trace($"Enroll at CA Pool: {caPoolAsTypedName}");              
 
                 if (!int.TryParse(productInfo.ProductParameters[LIFETIME_KEY], out int lifetimeInDays))
                 {
-                    Logger.Warn($"Unable to parse certificate {LIFETIME_KEY} from Product Parameters for Product Id {productInfo.ProductID}. Set Lifetime to 30 days.");
-                    lifetimeInDays = 30;
+                    Logger.Warn($"Unable to parse certificate {LIFETIME_KEY} from Product Parameters for Product Id {productInfo.ProductID}. Set Lifetime to 365 days.");
+                    lifetimeInDays = 365;
                 }
                 Logger.Trace($"Submit Certificate Request for {subject} with {lifetimeInDays} days validity");
                 var certificate = new Certificate()
                 {
                     PemCsr = $"-----BEGIN NEW CERTIFICATE REQUEST-----\n{pemify(csr)}\n-----END NEW CERTIFICATE REQUEST-----",
-                    Lifetime = Duration.FromTimeSpan(new TimeSpan(lifetimeInDays, 0, 0, 0, 0))
+                    Lifetime = Duration.FromTimeSpan(new TimeSpan(lifetimeInDays, 0, 0, 0, 0))//365 day default or defined by config
                 };
 
                 DateTime now = DateTime.Now;
                 var createCertificateRequest = new CreateCertificateRequest() { 
-                    //ParentAsCaPoolName = caPoolAsTypedName,
-                    ParentAsCertificateAuthorityName = parentAsTypedName,
+                    ParentAsCaPoolName = caPoolAsTypedName,
                     Certificate = certificate,
-                    //RequestId="",//this needs to be durable between reties 
+                    //RequestId="",//if used, this needs to be durable between reties 
                     CertificateId = $"{now:yyyy}{now:MM}{now:dd}-{now:HH}{now:mm}{now:ss}"//ID is required for Enterprise tier CAs and ignored for other.  
                 };
 
@@ -110,7 +105,7 @@ namespace Keyfactor.AnyGateway.Google
                 return new EnrollmentResult
                 {
                     Status = 20,
-                    CARequestID = response.CertificateName?.CertificateId,//likley blank for devops. Cannot sync or track these items
+                    CARequestID = response.CertificateName?.CertificateId,
                     Certificate = response.PemCertificate
                 };
             }
@@ -140,7 +135,7 @@ namespace Keyfactor.AnyGateway.Google
             Logger.MethodEntry(ILogExtensions.MethodLogLevel.Debug);
             try
             {
-                GcpClient = CertificateAuthorityServiceClient.Create();
+                GcpClient = BuildClient();
                 var cloudCert = GcpClient.GetCertificate(new CertificateName(ProjectId, LocationId, CAId, caRequestID));
 
                 return ProcessCAResponse(cloudCert);
@@ -182,6 +177,7 @@ namespace Keyfactor.AnyGateway.Google
         public override void Ping()
         {
             Logger.MethodEntry(ILogExtensions.MethodLogLevel.Debug);
+            Logger.MethodExit(ILogExtensions.MethodLogLevel.Debug);
 
         }
 
@@ -197,7 +193,7 @@ namespace Keyfactor.AnyGateway.Google
             Logger.MethodEntry(ILogExtensions.MethodLogLevel.Debug);
             try
             {
-                GcpClient = CertificateAuthorityServiceClient.Create();
+                GcpClient = BuildClient();
                 CertificateName certId = new CertificateName(ProjectId, LocationId, CAId, caRequestID);
 
                 RevokeCertificateRequest request = new RevokeCertificateRequest()
@@ -237,12 +233,11 @@ namespace Keyfactor.AnyGateway.Google
             Logger.MethodEntry(ILogExtensions.MethodLogLevel.Debug);
             try
             {
-                GcpClient = CertificateAuthorityServiceClient.Create();
+                GcpClient = BuildClient();
 
                 //For sync we still need to specify the CA ID since the pool will not provide a list of certs.  
                 //Do we have a CA in Keyfactor for each even thought issuance and revocation will be pool level? Probably
-                //CertificateAuthorityName caName = CertificateAuthorityName.FromProjectLocationCaPoolCertificateAuthority(ProjectId, LocationId, CAPoolId, CAId);
-                CertificateAuthorityName caName = CertificateAuthorityName.FromProjectLocationCertificateAuthority(ProjectId, LocationId, CAId);
+                CertificateAuthorityName caName = CertificateAuthorityName.FromProjectLocationCaPoolCertificateAuthority(ProjectId, LocationId, CAPoolId, CAId);
                 if (certificateAuthoritySyncInfo.DoFullSync)
                 {
                     var ca = GcpClient.GetCertificateAuthority(caName);
@@ -251,7 +246,7 @@ namespace Keyfactor.AnyGateway.Google
 
                 ListCertificatesRequest syncRequest = new ListCertificatesRequest()
                 {
-                    ParentAsCertificateAuthorityName = caName,
+                    ParentAsCaPoolName = CaPoolName.FromProjectLocationCaPool(ProjectId,LocationId,CAPoolId),
                 };
 
                 if (!certificateAuthoritySyncInfo.DoFullSync)
@@ -261,7 +256,7 @@ namespace Keyfactor.AnyGateway.Google
                     syncRequest.Filter = $"update_time >= {lastSyncTime}";
                 }
 
-                var responseList = GcpClient.ListCertificates(syncRequest); //TODO How does this perform with load?
+                var responseList = GcpClient.ListCertificates(syncRequest); 
                 ProcessCertificateList(responseList, blockingBuffer, cancelToken);
             }
             catch (RpcException gEx)
@@ -308,6 +303,9 @@ namespace Keyfactor.AnyGateway.Google
         public override void ValidateProductInfo(EnrollmentProductInfo productInfo, Dictionary<string, object> connectionInfo)
         {
             Logger.MethodEntry(ILogExtensions.MethodLogLevel.Debug);
+            //TODO: Evaluate Template (if avaiable) based on ProductInfo
+            //https://cloud.google.com/certificate-authority-service/docs/reference/rest/v1/projects.locations.certificateTemplates#CertificateTemplate
+            Logger.MethodExit(ILogExtensions.MethodLogLevel.Debug);
         }
 
         #region Private Helper Methods
@@ -344,7 +342,7 @@ namespace Keyfactor.AnyGateway.Google
                     {
                         if (blockedCount > 0)
                         {
-                            Logger.Warn($"Adding of {caCert.CARequestID} to queue was blocked. Took a total of {blockedCount} to process.");
+                            Logger.Warn($"Adding of {caCert.CARequestID} to queue was blocked. Took a total of {blockedCount} tries to process.");
                         }
                         pageCertsProcessed++;
                         totalCertsProcessed++;
@@ -388,7 +386,7 @@ namespace Keyfactor.AnyGateway.Google
                 {
                     if (blockedCount > 0)
                     {
-                        Logger.Warn($"Adding of {caCert.CARequestID} to queue was blocked. Took a total of {blockedCount} to process.");
+                        Logger.Warn($"Adding of {caCert.CARequestID} to queue was blocked. Took a total of {blockedCount} tries to process.");
                     }
                     caCertsProcessed++;
                 }
@@ -396,7 +394,7 @@ namespace Keyfactor.AnyGateway.Google
                 {
                     blockedCount++;
                 }
-            } while (caCertsProcessed >= 1);
+            } while (caCertsProcessed < (ca.PemCaCertificates.Count - 1) );
         }
 
         /// <summary>
@@ -409,27 +407,20 @@ namespace Keyfactor.AnyGateway.Google
             List<string> returnValue = new List<string>();
             try
             {
-                var ca = CertificateAuthorityServiceClient.Create().GetCertificateAuthority(new GetCertificateAuthorityRequest
+                var ca = BuildClient().GetCertificateAuthority(new GetCertificateAuthorityRequest
                 {
-                    //CertificateAuthorityName = CertificateAuthorityName.FromProjectLocationCaPoolCertificateAuthority(
-                    //    connectionInfo[PROJECT_ID_KEY] as string,
-                    //    connectionInfo[LOCATION_ID_KEY]as string,
-                    //    connectionInfo[CA_POOL_ID_KEY] as string,
-                    //    connectionInfo[CA_ID_KEY] as string
-                    //    )
-
-                    CertificateAuthorityName = CertificateAuthorityName.FromProjectLocationCertificateAuthority(
+                    CertificateAuthorityName = CertificateAuthorityName.FromProjectLocationCaPoolCertificateAuthority(
                         connectionInfo[PROJECT_ID_KEY] as string,
                         connectionInfo[LOCATION_ID_KEY] as string,
+                        connectionInfo[CA_POOL_ID_KEY] as string,
                         connectionInfo[CA_ID_KEY] as string
                         )
                 });
 
-//              if (ca.Tier == CaPool.Types.Tier.Devops)
-                if (ca.Tier == CertificateAuthority.Types.Tier.Devops)
-                {
+               if (ca.Tier == CaPool.Types.Tier.Devops)
+               {
                 returnValue.Add($"{ca.Tier} is an unsupported CA configuration");
-                }
+               }
             }
             catch (RpcException gEx)
             {
@@ -510,6 +501,20 @@ namespace Keyfactor.AnyGateway.Google
         /// Add new line every 64 characters to propertly format a base64 string as PEM
         /// </summary>
         private static Func<String, String> pemify = (ss => ss.Length <= 64 ? ss : ss.Substring(0, 64) + "\n" + pemify(ss.Substring(64)));
+        
+        /// <summary>
+        /// Build a new instance of the CertificateAuthorityServiceClient with explict credentials from the Server Envrionment Variable
+        /// </summary>
+        /// <returns></returns>
+        private static CertificateAuthorityServiceClient BuildClient()
+        {
+            var caClient = new CertificateAuthorityServiceClientBuilder
+            {
+                CredentialsPath = Environment.GetEnvironmentVariable(AUTH_ENV_VARIABLE_NAME, EnvironmentVariableTarget.Machine)
+            };
+            return caClient.Build();
+        }
+
 
         #endregion
 

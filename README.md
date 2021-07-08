@@ -2,15 +2,20 @@
 The  [Google Certificate Authority Service](https://cloud.google.com/certificate-authority-service) is a highly available, scalable Google Cloud service that enables you to simplify, automate, and customize the deployment, management, and security of private certificate authorities (CA).
 It should be noted that currently, due to the design of the DevOps tier of CA, Enterprise tier CAs are only supported by the AnyGateway. 
 # Prerequsites
-##[Authentication](https://cloud.google.com/docs/authentication/production)
+## [Authentication](https://cloud.google.com/docs/authentication/production)
 A JSON file generated for a Google Service Account will need to be created and placed on the AnyGateway Server. The path of this file into the GOOGLE_APPLICATION_CREDENTIALS environment variable to be used during a CA session. Since the 
 AnyGateway is requried to run as the Network Service account, the registry will need to be modified to provide the service acess to the Envrionment variable above. The GOOGLE_APPLICATION_CREDENTIALS variable should be placed in the following 
 registry location and read access provided:
 
 * HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\Environment
 
-##[Authorization](https://cloud.google.com/certificate-authority-service/docs/reference/permissions-and-roles)
+## [Authorization](https://cloud.google.com/certificate-authority-service/docs/reference/permissions-and-roles)
 Currently the only method supported for authentication is a Service Credential with the following IAM authorizations. Any built in role with the below authorizations will function as well. 
+* privateca.caPools.list
+* privateca.caPools.get
+* privateca.certificateTemplates.list
+* privateca.certificateTemplates.get
+* privateca.certificateTemplates.use
 * privateca.certificateAuthorities.list
 * privateca.certificateAuthorities.get
 * privateca.certificates.create
@@ -21,12 +26,13 @@ Currently the only method supported for authentication is a Service Credential w
 * privateca.reusableConfigs.list
 * resourcemanager.projects.get
 
-##Certificate Chain
+## Certificate Chain
 In order to enroll for certificates the Keyfactor Command server must trust the Private CA chain.  Once you create your Root and/or Subordinate CA, make sure to import the certifiate chain into the Command Server certificate store
 
-#Install
-* Download latest successful build from DevOps  
-[![Build status](https://devops.corp.keyfactor.com/MainCollection/SolutionEngineering/_apis/build/status/Integration-AnyGateway-GoogleCA)](https://devops.corp.keyfactor.com/MainCollection/SolutionEngineering/_build/latest?definitionId=152)
+# Install
+* Install the AnyCA Gateway Framework using the MSI from the Software Download Portal
+
+* Download latest successful build from [GitHub](https://github.com/Keyfactor/google-cloud-cagateway)
 
 * Copy *.dll to the Program Files\Keyfactor\ Keyfactor AnyGateway directory
 
@@ -35,8 +41,7 @@ In order to enroll for certificates the Keyfactor Command server must trust the 
   ```xml
   <alias alias="CAConnector" type="Keyfactor.AnyGateway.Google.GoogleCAProxy, GoogleCAProxy"/>
   ```
-  * Append the binding redirects within the app.config file to the CAProxyServer.config file 
-
+  * Depending on the version of the AnyCA Gateway installed, addtional binding redirects may need to be applied from the app.config. These redirections will be added to the CAProxyServer.config file 
 
 # Configuration
 The following sections will breakdown the required configurations for the AnyGatewayConfig.json file that will be imported to configure the Google CA. 
@@ -46,7 +51,7 @@ The Google CA has introduced the concept of Templates for the V1 release. the pr
  ```json
    "Templates": {
     "GoogleCAWebServer": {
-      "ProductID": "GatewayProductID",/*Required by AnyGateway*/
+      "ProductID": "GatewayProductID",/*resource id of the certificate template if applicahble. Required field for the AnyCA Gateway framework*/
       "Parameters": {
         "Lifetime": "300",/*days*/
       }
@@ -122,16 +127,19 @@ This is the Resource ID of the project that contains the Google CA Service
 This is the resource ID of the geograpical location (i.e. us-east1) within the Google Cloud
 * CAId  
 This is the resource Id of the CA created using the [Google Cloud Console](https://console.cloud.google.com)
+* CAPoolId
+This is the resource id of the CA Pool created using the [Google Cloud Console](https://console.cloud.google.com)
 
 ```json
 "CAConnection": {
     "ProjectId": "concise-frame-296019",
     "LocationId": "us-east1",
-    "CAId":"ca-enterprise-subordinate-sandbox-tls"
+    "CAId":"ca-enterprise-subordinate-sandbox-tls",
+    "CAPoolId":"gcp-test-pool"
 }
 ```
 ## GatewayRegistration
-There are no Google Specific Changes for the GatewayRegistration section. Refer to the [AnyGateway Documentation](https://kfeaus00web-01.corp.keyfactor.com/keyfactordocs/AnyGateway/v20.9/Generic/Content/AnyGateway/Introduction.htm) for more detail
+There are no Google Specific Changes for the GatewayRegistration section. Refer to the [AnyGateway Documentation](https://kfeaus00web-01.corp.keyfactor.com/keyfactordocs/AnyGateway/v20.9/Generic/Content/AnyGateway/Introduction.htm) for more detail on required changed to support the AnyCA Gateway
 ```json
   "GatewayRegistration": {
     "LogicalName": "GoogleCASandbox",
@@ -144,7 +152,7 @@ There are no Google Specific Changes for the GatewayRegistration section. Refer 
 ```
 
 ## ServiceSettings
-There are no Google Specific Changes for the GatewayRegistration section. Refer to the [AnyGateway Documentation](https://kfeaus00web-01.corp.keyfactor.com/keyfactordocs/AnyGateway/v20.9/Generic/Content/AnyGateway/Introduction.htm) for more detail
+There are no Google Specific Changes for the GatewayRegistration section. Refer to the [AnyGateway Documentation](https://kfeaus00web-01.corp.keyfactor.com/keyfactordocs/AnyGateway/v20.9/Generic/Content/AnyGateway/Introduction.htm) for more detail on required changed to support the AnyCA Gateway
 ```json
   "ServiceSettings": {
     "ViewIdleMinutes": 8,
