@@ -47,7 +47,7 @@ jobs:
         
       - name: Add Package Source
         run: |
-          dotnet nuget add source https://nuget.pkg.github.com/Keyfactor/index.json -n github -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text
+          dotnet nuget add source https://nuget.pkg.github.com/Keyfactor/index.json -n github -u ${{ github.actor }} -p ${{ secrets.BUILD_PACKAGE_ACCESS }} --store-password-in-clear-text
       
       # Configures msbuild path envrionment
       - name: setup-msbuild
@@ -85,7 +85,7 @@ jobs:
       
       - name: Execute MSBuild Commands
         run: |
-          MSBuild.exe $Env:SOLUTION_PATH -p:RestorePackagesConfig=false -p:Configuration=Release       
+          MSBuild.exe $Env:SOLUTION_PATH -p:RestorePackagesConfig=true -p:Configuration=Release       
       
       - name: Archive Files
         if: ${{ success() }}
