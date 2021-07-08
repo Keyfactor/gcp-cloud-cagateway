@@ -43,12 +43,10 @@ namespace Google.Cloud.Security.PrivateCA.V1
 
     public partial class ListCertificatesRequest
     {
-        /// <summary>
-        /// <see cref="CertificateAuthorityName"/>-typed view over the <see cref="Parent"/> resource name property.
-        /// </summary>
-        public CertificateAuthorityName ParentAsCertificateAuthorityName
+        /// <summary><see cref="CaPoolName"/>-typed view over the <see cref="Parent"/> resource name property.</summary>
+        public CaPoolName ParentAsCaPoolName
         {
-            get => string.IsNullOrEmpty(Parent) ? null : CertificateAuthorityName.Parse(Parent, allowUnparsed: true);
+            get => string.IsNullOrEmpty(Parent) ? null : CaPoolName.Parse(Parent, allowUnparsed: true);
             set => Parent = value?.ToString() ?? "";
         }
     }
@@ -79,12 +77,10 @@ namespace Google.Cloud.Security.PrivateCA.V1
 
     public partial class CreateCertificateAuthorityRequest
     {
-        /// <summary>
-        /// <see cref="gagr::LocationName"/>-typed view over the <see cref="Parent"/> resource name property.
-        /// </summary>
-        public gagr::LocationName ParentAsLocationName
+        /// <summary><see cref="CaPoolName"/>-typed view over the <see cref="Parent"/> resource name property.</summary>
+        public CaPoolName ParentAsCaPoolName
         {
-            get => string.IsNullOrEmpty(Parent) ? null : gagr::LocationName.Parse(Parent, allowUnparsed: true);
+            get => string.IsNullOrEmpty(Parent) ? null : CaPoolName.Parse(Parent, allowUnparsed: true);
             set => Parent = value?.ToString() ?? "";
         }
     }
@@ -139,12 +135,10 @@ namespace Google.Cloud.Security.PrivateCA.V1
 
     public partial class ListCertificateAuthoritiesRequest
     {
-        /// <summary>
-        /// <see cref="gagr::LocationName"/>-typed view over the <see cref="Parent"/> resource name property.
-        /// </summary>
-        public gagr::LocationName ParentAsLocationName
+        /// <summary><see cref="CaPoolName"/>-typed view over the <see cref="Parent"/> resource name property.</summary>
+        public CaPoolName ParentAsCaPoolName
         {
-            get => string.IsNullOrEmpty(Parent) ? null : gagr::LocationName.Parse(Parent, allowUnparsed: true);
+            get => string.IsNullOrEmpty(Parent) ? null : CaPoolName.Parse(Parent, allowUnparsed: true);
             set => Parent = value?.ToString() ?? "";
         }
     }

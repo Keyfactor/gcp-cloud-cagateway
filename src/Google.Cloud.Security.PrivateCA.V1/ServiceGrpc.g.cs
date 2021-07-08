@@ -24,9 +24,8 @@ using grpc = global::Grpc.Core;
 
 namespace Google.Cloud.Security.PrivateCA.V1 {
   /// <summary>
-  /// [Certificate Authority
-  /// Service][google.cloud.security.privateca.v1.CertificateAuthorityService]
-  /// manages private certificate authorities and issued certificates.
+  /// [Certificate Authority Service][google.cloud.security.privateca.v1.CertificateAuthorityService] manages private
+  /// certificate authorities and issued certificates.
   /// </summary>
   public static partial class CertificateAuthorityService
   {
@@ -319,8 +318,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
     public abstract partial class CertificateAuthorityServiceBase
     {
       /// <summary>
-      /// Create a new [Certificate][google.cloud.security.privateca.v1.Certificate]
-      /// in a given Project, Location from a particular
+      /// Create a new [Certificate][google.cloud.security.privateca.v1.Certificate] in a given Project, Location from a particular
       /// [CaPool][google.cloud.security.privateca.v1.CaPool].
       /// </summary>
       /// <param name="request">The request received from the client.</param>
@@ -365,8 +363,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
       }
 
       /// <summary>
-      /// Update a [Certificate][google.cloud.security.privateca.v1.Certificate].
-      /// Currently, the only field you can update is the
+      /// Update a [Certificate][google.cloud.security.privateca.v1.Certificate]. Currently, the only field you can update is the
       /// [labels][google.cloud.security.privateca.v1.Certificate.labels] field.
       /// </summary>
       /// <param name="request">The request received from the client.</param>
@@ -378,16 +375,12 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
       }
 
       /// <summary>
-      /// Activate a
-      /// [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority]
-      /// that is in state
+      /// Activate a [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority] that is in state
       /// [AWAITING_USER_ACTIVATION][google.cloud.security.privateca.v1.CertificateAuthority.State.AWAITING_USER_ACTIVATION]
-      /// and is of type
-      /// [SUBORDINATE][google.cloud.security.privateca.v1.CertificateAuthority.Type.SUBORDINATE].
-      /// After the parent Certificate Authority signs a certificate signing request
-      /// from
-      /// [FetchCertificateAuthorityCsr][google.cloud.security.privateca.v1.CertificateAuthorityService.FetchCertificateAuthorityCsr],
-      /// this method can complete the activation process.
+      /// and is of type [SUBORDINATE][google.cloud.security.privateca.v1.CertificateAuthority.Type.SUBORDINATE]. After
+      /// the parent Certificate Authority signs a certificate signing request from
+      /// [FetchCertificateAuthorityCsr][google.cloud.security.privateca.v1.CertificateAuthorityService.FetchCertificateAuthorityCsr], this method can complete the activation
+      /// process.
       /// </summary>
       /// <param name="request">The request received from the client.</param>
       /// <param name="context">The context of the server-side call handler being invoked.</param>
@@ -398,9 +391,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
       }
 
       /// <summary>
-      /// Create a new
-      /// [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority]
-      /// in a given Project and Location.
+      /// Create a new [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority] in a given Project and Location.
       /// </summary>
       /// <param name="request">The request received from the client.</param>
       /// <param name="context">The context of the server-side call handler being invoked.</param>
@@ -411,8 +402,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
       }
 
       /// <summary>
-      /// Disable a
-      /// [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority].
+      /// Disable a [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority].
       /// </summary>
       /// <param name="request">The request received from the client.</param>
       /// <param name="context">The context of the server-side call handler being invoked.</param>
@@ -423,8 +413,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
       }
 
       /// <summary>
-      /// Enable a
-      /// [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority].
+      /// Enable a [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority].
       /// </summary>
       /// <param name="request">The request received from the client.</param>
       /// <param name="context">The context of the server-side call handler being invoked.</param>
@@ -435,17 +424,13 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
       }
 
       /// <summary>
-      /// Fetch a certificate signing request (CSR) from a
-      /// [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority]
+      /// Fetch a certificate signing request (CSR) from a [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority]
       /// that is in state
       /// [AWAITING_USER_ACTIVATION][google.cloud.security.privateca.v1.CertificateAuthority.State.AWAITING_USER_ACTIVATION]
-      /// and is of type
-      /// [SUBORDINATE][google.cloud.security.privateca.v1.CertificateAuthority.Type.SUBORDINATE].
-      /// The CSR must then be signed by the desired parent Certificate Authority,
-      /// which could be another
-      /// [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority]
-      /// resource, or could be an on-prem certificate authority. See also
-      /// [ActivateCertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthorityService.ActivateCertificateAuthority].
+      /// and is of type [SUBORDINATE][google.cloud.security.privateca.v1.CertificateAuthority.Type.SUBORDINATE]. The
+      /// CSR must then be signed by the desired parent Certificate Authority, which
+      /// could be another [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority] resource, or could be an on-prem
+      /// certificate authority. See also [ActivateCertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthorityService.ActivateCertificateAuthority].
       /// </summary>
       /// <param name="request">The request received from the client.</param>
       /// <param name="context">The context of the server-side call handler being invoked.</param>
@@ -456,8 +441,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
       }
 
       /// <summary>
-      /// Returns a
-      /// [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority].
+      /// Returns a [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority].
       /// </summary>
       /// <param name="request">The request received from the client.</param>
       /// <param name="context">The context of the server-side call handler being invoked.</param>
@@ -468,8 +452,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
       }
 
       /// <summary>
-      /// Lists
-      /// [CertificateAuthorities][google.cloud.security.privateca.v1.CertificateAuthority].
+      /// Lists [CertificateAuthorities][google.cloud.security.privateca.v1.CertificateAuthority].
       /// </summary>
       /// <param name="request">The request received from the client.</param>
       /// <param name="context">The context of the server-side call handler being invoked.</param>
@@ -480,9 +463,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
       }
 
       /// <summary>
-      /// Undelete a
-      /// [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority]
-      /// that has been deleted.
+      /// Undelete a [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority] that has been deleted.
       /// </summary>
       /// <param name="request">The request received from the client.</param>
       /// <param name="context">The context of the server-side call handler being invoked.</param>
@@ -493,8 +474,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
       }
 
       /// <summary>
-      /// Delete a
-      /// [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority].
+      /// Delete a [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority].
       /// </summary>
       /// <param name="request">The request received from the client.</param>
       /// <param name="context">The context of the server-side call handler being invoked.</param>
@@ -505,8 +485,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
       }
 
       /// <summary>
-      /// Update a
-      /// [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority].
+      /// Update a [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority].
       /// </summary>
       /// <param name="request">The request received from the client.</param>
       /// <param name="context">The context of the server-side call handler being invoked.</param>
@@ -572,10 +551,8 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
       }
 
       /// <summary>
-      /// FetchCaCerts returns the current trust anchor for the
-      /// [CaPool][google.cloud.security.privateca.v1.CaPool]. This will include CA
-      /// certificate chains for all ACTIVE
-      /// [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority]
+      /// FetchCaCerts returns the current trust anchor for the [CaPool][google.cloud.security.privateca.v1.CaPool]. This will
+      /// include CA certificate chains for all ACTIVE [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority]
       /// resources in the [CaPool][google.cloud.security.privateca.v1.CaPool].
       /// </summary>
       /// <param name="request">The request received from the client.</param>
@@ -587,8 +564,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
       }
 
       /// <summary>
-      /// Returns a
-      /// [CertificateRevocationList][google.cloud.security.privateca.v1.CertificateRevocationList].
+      /// Returns a [CertificateRevocationList][google.cloud.security.privateca.v1.CertificateRevocationList].
       /// </summary>
       /// <param name="request">The request received from the client.</param>
       /// <param name="context">The context of the server-side call handler being invoked.</param>
@@ -599,8 +575,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
       }
 
       /// <summary>
-      /// Lists
-      /// [CertificateRevocationLists][google.cloud.security.privateca.v1.CertificateRevocationList].
+      /// Lists [CertificateRevocationLists][google.cloud.security.privateca.v1.CertificateRevocationList].
       /// </summary>
       /// <param name="request">The request received from the client.</param>
       /// <param name="context">The context of the server-side call handler being invoked.</param>
@@ -611,8 +586,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
       }
 
       /// <summary>
-      /// Update a
-      /// [CertificateRevocationList][google.cloud.security.privateca.v1.CertificateRevocationList].
+      /// Update a [CertificateRevocationList][google.cloud.security.privateca.v1.CertificateRevocationList].
       /// </summary>
       /// <param name="request">The request received from the client.</param>
       /// <param name="context">The context of the server-side call handler being invoked.</param>
@@ -623,9 +597,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
       }
 
       /// <summary>
-      /// Create a new
-      /// [CertificateTemplate][google.cloud.security.privateca.v1.CertificateTemplate]
-      /// in a given Project and Location.
+      /// Create a new [CertificateTemplate][google.cloud.security.privateca.v1.CertificateTemplate] in a given Project and Location.
       /// </summary>
       /// <param name="request">The request received from the client.</param>
       /// <param name="context">The context of the server-side call handler being invoked.</param>
@@ -636,8 +608,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
       }
 
       /// <summary>
-      /// DeleteCertificateTemplate deletes a
-      /// [CertificateTemplate][google.cloud.security.privateca.v1.CertificateTemplate].
+      /// DeleteCertificateTemplate deletes a [CertificateTemplate][google.cloud.security.privateca.v1.CertificateTemplate].
       /// </summary>
       /// <param name="request">The request received from the client.</param>
       /// <param name="context">The context of the server-side call handler being invoked.</param>
@@ -648,8 +619,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
       }
 
       /// <summary>
-      /// Returns a
-      /// [CertificateTemplate][google.cloud.security.privateca.v1.CertificateTemplate].
+      /// Returns a [CertificateTemplate][google.cloud.security.privateca.v1.CertificateTemplate].
       /// </summary>
       /// <param name="request">The request received from the client.</param>
       /// <param name="context">The context of the server-side call handler being invoked.</param>
@@ -660,8 +630,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
       }
 
       /// <summary>
-      /// Lists
-      /// [CertificateTemplates][google.cloud.security.privateca.v1.CertificateTemplate].
+      /// Lists [CertificateTemplates][google.cloud.security.privateca.v1.CertificateTemplate].
       /// </summary>
       /// <param name="request">The request received from the client.</param>
       /// <param name="context">The context of the server-side call handler being invoked.</param>
@@ -672,8 +641,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
       }
 
       /// <summary>
-      /// Update a
-      /// [CertificateTemplate][google.cloud.security.privateca.v1.CertificateTemplate].
+      /// Update a [CertificateTemplate][google.cloud.security.privateca.v1.CertificateTemplate].
       /// </summary>
       /// <param name="request">The request received from the client.</param>
       /// <param name="context">The context of the server-side call handler being invoked.</param>
@@ -709,8 +677,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
       }
 
       /// <summary>
-      /// Create a new [Certificate][google.cloud.security.privateca.v1.Certificate]
-      /// in a given Project, Location from a particular
+      /// Create a new [Certificate][google.cloud.security.privateca.v1.Certificate] in a given Project, Location from a particular
       /// [CaPool][google.cloud.security.privateca.v1.CaPool].
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
@@ -723,8 +690,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return CreateCertificate(request, new grpc::CallOptions(headers, deadline, cancellationToken));
       }
       /// <summary>
-      /// Create a new [Certificate][google.cloud.security.privateca.v1.Certificate]
-      /// in a given Project, Location from a particular
+      /// Create a new [Certificate][google.cloud.security.privateca.v1.Certificate] in a given Project, Location from a particular
       /// [CaPool][google.cloud.security.privateca.v1.CaPool].
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
@@ -735,8 +701,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return CallInvoker.BlockingUnaryCall(__Method_CreateCertificate, null, options, request);
       }
       /// <summary>
-      /// Create a new [Certificate][google.cloud.security.privateca.v1.Certificate]
-      /// in a given Project, Location from a particular
+      /// Create a new [Certificate][google.cloud.security.privateca.v1.Certificate] in a given Project, Location from a particular
       /// [CaPool][google.cloud.security.privateca.v1.CaPool].
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
@@ -749,8 +714,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return CreateCertificateAsync(request, new grpc::CallOptions(headers, deadline, cancellationToken));
       }
       /// <summary>
-      /// Create a new [Certificate][google.cloud.security.privateca.v1.Certificate]
-      /// in a given Project, Location from a particular
+      /// Create a new [Certificate][google.cloud.security.privateca.v1.Certificate] in a given Project, Location from a particular
       /// [CaPool][google.cloud.security.privateca.v1.CaPool].
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
@@ -893,8 +857,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return CallInvoker.AsyncUnaryCall(__Method_RevokeCertificate, null, options, request);
       }
       /// <summary>
-      /// Update a [Certificate][google.cloud.security.privateca.v1.Certificate].
-      /// Currently, the only field you can update is the
+      /// Update a [Certificate][google.cloud.security.privateca.v1.Certificate]. Currently, the only field you can update is the
       /// [labels][google.cloud.security.privateca.v1.Certificate.labels] field.
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
@@ -907,8 +870,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return UpdateCertificate(request, new grpc::CallOptions(headers, deadline, cancellationToken));
       }
       /// <summary>
-      /// Update a [Certificate][google.cloud.security.privateca.v1.Certificate].
-      /// Currently, the only field you can update is the
+      /// Update a [Certificate][google.cloud.security.privateca.v1.Certificate]. Currently, the only field you can update is the
       /// [labels][google.cloud.security.privateca.v1.Certificate.labels] field.
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
@@ -919,8 +881,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return CallInvoker.BlockingUnaryCall(__Method_UpdateCertificate, null, options, request);
       }
       /// <summary>
-      /// Update a [Certificate][google.cloud.security.privateca.v1.Certificate].
-      /// Currently, the only field you can update is the
+      /// Update a [Certificate][google.cloud.security.privateca.v1.Certificate]. Currently, the only field you can update is the
       /// [labels][google.cloud.security.privateca.v1.Certificate.labels] field.
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
@@ -933,8 +894,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return UpdateCertificateAsync(request, new grpc::CallOptions(headers, deadline, cancellationToken));
       }
       /// <summary>
-      /// Update a [Certificate][google.cloud.security.privateca.v1.Certificate].
-      /// Currently, the only field you can update is the
+      /// Update a [Certificate][google.cloud.security.privateca.v1.Certificate]. Currently, the only field you can update is the
       /// [labels][google.cloud.security.privateca.v1.Certificate.labels] field.
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
@@ -945,16 +905,12 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return CallInvoker.AsyncUnaryCall(__Method_UpdateCertificate, null, options, request);
       }
       /// <summary>
-      /// Activate a
-      /// [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority]
-      /// that is in state
+      /// Activate a [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority] that is in state
       /// [AWAITING_USER_ACTIVATION][google.cloud.security.privateca.v1.CertificateAuthority.State.AWAITING_USER_ACTIVATION]
-      /// and is of type
-      /// [SUBORDINATE][google.cloud.security.privateca.v1.CertificateAuthority.Type.SUBORDINATE].
-      /// After the parent Certificate Authority signs a certificate signing request
-      /// from
-      /// [FetchCertificateAuthorityCsr][google.cloud.security.privateca.v1.CertificateAuthorityService.FetchCertificateAuthorityCsr],
-      /// this method can complete the activation process.
+      /// and is of type [SUBORDINATE][google.cloud.security.privateca.v1.CertificateAuthority.Type.SUBORDINATE]. After
+      /// the parent Certificate Authority signs a certificate signing request from
+      /// [FetchCertificateAuthorityCsr][google.cloud.security.privateca.v1.CertificateAuthorityService.FetchCertificateAuthorityCsr], this method can complete the activation
+      /// process.
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
       /// <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
@@ -966,16 +922,12 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return ActivateCertificateAuthority(request, new grpc::CallOptions(headers, deadline, cancellationToken));
       }
       /// <summary>
-      /// Activate a
-      /// [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority]
-      /// that is in state
+      /// Activate a [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority] that is in state
       /// [AWAITING_USER_ACTIVATION][google.cloud.security.privateca.v1.CertificateAuthority.State.AWAITING_USER_ACTIVATION]
-      /// and is of type
-      /// [SUBORDINATE][google.cloud.security.privateca.v1.CertificateAuthority.Type.SUBORDINATE].
-      /// After the parent Certificate Authority signs a certificate signing request
-      /// from
-      /// [FetchCertificateAuthorityCsr][google.cloud.security.privateca.v1.CertificateAuthorityService.FetchCertificateAuthorityCsr],
-      /// this method can complete the activation process.
+      /// and is of type [SUBORDINATE][google.cloud.security.privateca.v1.CertificateAuthority.Type.SUBORDINATE]. After
+      /// the parent Certificate Authority signs a certificate signing request from
+      /// [FetchCertificateAuthorityCsr][google.cloud.security.privateca.v1.CertificateAuthorityService.FetchCertificateAuthorityCsr], this method can complete the activation
+      /// process.
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
       /// <param name="options">The options for the call.</param>
@@ -985,16 +937,12 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return CallInvoker.BlockingUnaryCall(__Method_ActivateCertificateAuthority, null, options, request);
       }
       /// <summary>
-      /// Activate a
-      /// [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority]
-      /// that is in state
+      /// Activate a [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority] that is in state
       /// [AWAITING_USER_ACTIVATION][google.cloud.security.privateca.v1.CertificateAuthority.State.AWAITING_USER_ACTIVATION]
-      /// and is of type
-      /// [SUBORDINATE][google.cloud.security.privateca.v1.CertificateAuthority.Type.SUBORDINATE].
-      /// After the parent Certificate Authority signs a certificate signing request
-      /// from
-      /// [FetchCertificateAuthorityCsr][google.cloud.security.privateca.v1.CertificateAuthorityService.FetchCertificateAuthorityCsr],
-      /// this method can complete the activation process.
+      /// and is of type [SUBORDINATE][google.cloud.security.privateca.v1.CertificateAuthority.Type.SUBORDINATE]. After
+      /// the parent Certificate Authority signs a certificate signing request from
+      /// [FetchCertificateAuthorityCsr][google.cloud.security.privateca.v1.CertificateAuthorityService.FetchCertificateAuthorityCsr], this method can complete the activation
+      /// process.
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
       /// <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
@@ -1006,16 +954,12 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return ActivateCertificateAuthorityAsync(request, new grpc::CallOptions(headers, deadline, cancellationToken));
       }
       /// <summary>
-      /// Activate a
-      /// [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority]
-      /// that is in state
+      /// Activate a [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority] that is in state
       /// [AWAITING_USER_ACTIVATION][google.cloud.security.privateca.v1.CertificateAuthority.State.AWAITING_USER_ACTIVATION]
-      /// and is of type
-      /// [SUBORDINATE][google.cloud.security.privateca.v1.CertificateAuthority.Type.SUBORDINATE].
-      /// After the parent Certificate Authority signs a certificate signing request
-      /// from
-      /// [FetchCertificateAuthorityCsr][google.cloud.security.privateca.v1.CertificateAuthorityService.FetchCertificateAuthorityCsr],
-      /// this method can complete the activation process.
+      /// and is of type [SUBORDINATE][google.cloud.security.privateca.v1.CertificateAuthority.Type.SUBORDINATE]. After
+      /// the parent Certificate Authority signs a certificate signing request from
+      /// [FetchCertificateAuthorityCsr][google.cloud.security.privateca.v1.CertificateAuthorityService.FetchCertificateAuthorityCsr], this method can complete the activation
+      /// process.
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
       /// <param name="options">The options for the call.</param>
@@ -1025,9 +969,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return CallInvoker.AsyncUnaryCall(__Method_ActivateCertificateAuthority, null, options, request);
       }
       /// <summary>
-      /// Create a new
-      /// [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority]
-      /// in a given Project and Location.
+      /// Create a new [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority] in a given Project and Location.
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
       /// <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
@@ -1039,9 +981,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return CreateCertificateAuthority(request, new grpc::CallOptions(headers, deadline, cancellationToken));
       }
       /// <summary>
-      /// Create a new
-      /// [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority]
-      /// in a given Project and Location.
+      /// Create a new [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority] in a given Project and Location.
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
       /// <param name="options">The options for the call.</param>
@@ -1051,9 +991,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return CallInvoker.BlockingUnaryCall(__Method_CreateCertificateAuthority, null, options, request);
       }
       /// <summary>
-      /// Create a new
-      /// [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority]
-      /// in a given Project and Location.
+      /// Create a new [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority] in a given Project and Location.
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
       /// <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
@@ -1065,9 +1003,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return CreateCertificateAuthorityAsync(request, new grpc::CallOptions(headers, deadline, cancellationToken));
       }
       /// <summary>
-      /// Create a new
-      /// [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority]
-      /// in a given Project and Location.
+      /// Create a new [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority] in a given Project and Location.
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
       /// <param name="options">The options for the call.</param>
@@ -1077,8 +1013,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return CallInvoker.AsyncUnaryCall(__Method_CreateCertificateAuthority, null, options, request);
       }
       /// <summary>
-      /// Disable a
-      /// [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority].
+      /// Disable a [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority].
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
       /// <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
@@ -1090,8 +1025,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return DisableCertificateAuthority(request, new grpc::CallOptions(headers, deadline, cancellationToken));
       }
       /// <summary>
-      /// Disable a
-      /// [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority].
+      /// Disable a [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority].
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
       /// <param name="options">The options for the call.</param>
@@ -1101,8 +1035,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return CallInvoker.BlockingUnaryCall(__Method_DisableCertificateAuthority, null, options, request);
       }
       /// <summary>
-      /// Disable a
-      /// [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority].
+      /// Disable a [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority].
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
       /// <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
@@ -1114,8 +1047,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return DisableCertificateAuthorityAsync(request, new grpc::CallOptions(headers, deadline, cancellationToken));
       }
       /// <summary>
-      /// Disable a
-      /// [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority].
+      /// Disable a [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority].
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
       /// <param name="options">The options for the call.</param>
@@ -1125,8 +1057,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return CallInvoker.AsyncUnaryCall(__Method_DisableCertificateAuthority, null, options, request);
       }
       /// <summary>
-      /// Enable a
-      /// [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority].
+      /// Enable a [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority].
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
       /// <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
@@ -1138,8 +1069,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return EnableCertificateAuthority(request, new grpc::CallOptions(headers, deadline, cancellationToken));
       }
       /// <summary>
-      /// Enable a
-      /// [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority].
+      /// Enable a [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority].
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
       /// <param name="options">The options for the call.</param>
@@ -1149,8 +1079,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return CallInvoker.BlockingUnaryCall(__Method_EnableCertificateAuthority, null, options, request);
       }
       /// <summary>
-      /// Enable a
-      /// [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority].
+      /// Enable a [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority].
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
       /// <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
@@ -1162,8 +1091,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return EnableCertificateAuthorityAsync(request, new grpc::CallOptions(headers, deadline, cancellationToken));
       }
       /// <summary>
-      /// Enable a
-      /// [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority].
+      /// Enable a [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority].
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
       /// <param name="options">The options for the call.</param>
@@ -1173,17 +1101,13 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return CallInvoker.AsyncUnaryCall(__Method_EnableCertificateAuthority, null, options, request);
       }
       /// <summary>
-      /// Fetch a certificate signing request (CSR) from a
-      /// [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority]
+      /// Fetch a certificate signing request (CSR) from a [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority]
       /// that is in state
       /// [AWAITING_USER_ACTIVATION][google.cloud.security.privateca.v1.CertificateAuthority.State.AWAITING_USER_ACTIVATION]
-      /// and is of type
-      /// [SUBORDINATE][google.cloud.security.privateca.v1.CertificateAuthority.Type.SUBORDINATE].
-      /// The CSR must then be signed by the desired parent Certificate Authority,
-      /// which could be another
-      /// [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority]
-      /// resource, or could be an on-prem certificate authority. See also
-      /// [ActivateCertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthorityService.ActivateCertificateAuthority].
+      /// and is of type [SUBORDINATE][google.cloud.security.privateca.v1.CertificateAuthority.Type.SUBORDINATE]. The
+      /// CSR must then be signed by the desired parent Certificate Authority, which
+      /// could be another [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority] resource, or could be an on-prem
+      /// certificate authority. See also [ActivateCertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthorityService.ActivateCertificateAuthority].
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
       /// <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
@@ -1195,17 +1119,13 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return FetchCertificateAuthorityCsr(request, new grpc::CallOptions(headers, deadline, cancellationToken));
       }
       /// <summary>
-      /// Fetch a certificate signing request (CSR) from a
-      /// [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority]
+      /// Fetch a certificate signing request (CSR) from a [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority]
       /// that is in state
       /// [AWAITING_USER_ACTIVATION][google.cloud.security.privateca.v1.CertificateAuthority.State.AWAITING_USER_ACTIVATION]
-      /// and is of type
-      /// [SUBORDINATE][google.cloud.security.privateca.v1.CertificateAuthority.Type.SUBORDINATE].
-      /// The CSR must then be signed by the desired parent Certificate Authority,
-      /// which could be another
-      /// [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority]
-      /// resource, or could be an on-prem certificate authority. See also
-      /// [ActivateCertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthorityService.ActivateCertificateAuthority].
+      /// and is of type [SUBORDINATE][google.cloud.security.privateca.v1.CertificateAuthority.Type.SUBORDINATE]. The
+      /// CSR must then be signed by the desired parent Certificate Authority, which
+      /// could be another [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority] resource, or could be an on-prem
+      /// certificate authority. See also [ActivateCertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthorityService.ActivateCertificateAuthority].
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
       /// <param name="options">The options for the call.</param>
@@ -1215,17 +1135,13 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return CallInvoker.BlockingUnaryCall(__Method_FetchCertificateAuthorityCsr, null, options, request);
       }
       /// <summary>
-      /// Fetch a certificate signing request (CSR) from a
-      /// [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority]
+      /// Fetch a certificate signing request (CSR) from a [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority]
       /// that is in state
       /// [AWAITING_USER_ACTIVATION][google.cloud.security.privateca.v1.CertificateAuthority.State.AWAITING_USER_ACTIVATION]
-      /// and is of type
-      /// [SUBORDINATE][google.cloud.security.privateca.v1.CertificateAuthority.Type.SUBORDINATE].
-      /// The CSR must then be signed by the desired parent Certificate Authority,
-      /// which could be another
-      /// [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority]
-      /// resource, or could be an on-prem certificate authority. See also
-      /// [ActivateCertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthorityService.ActivateCertificateAuthority].
+      /// and is of type [SUBORDINATE][google.cloud.security.privateca.v1.CertificateAuthority.Type.SUBORDINATE]. The
+      /// CSR must then be signed by the desired parent Certificate Authority, which
+      /// could be another [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority] resource, or could be an on-prem
+      /// certificate authority. See also [ActivateCertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthorityService.ActivateCertificateAuthority].
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
       /// <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
@@ -1237,17 +1153,13 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return FetchCertificateAuthorityCsrAsync(request, new grpc::CallOptions(headers, deadline, cancellationToken));
       }
       /// <summary>
-      /// Fetch a certificate signing request (CSR) from a
-      /// [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority]
+      /// Fetch a certificate signing request (CSR) from a [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority]
       /// that is in state
       /// [AWAITING_USER_ACTIVATION][google.cloud.security.privateca.v1.CertificateAuthority.State.AWAITING_USER_ACTIVATION]
-      /// and is of type
-      /// [SUBORDINATE][google.cloud.security.privateca.v1.CertificateAuthority.Type.SUBORDINATE].
-      /// The CSR must then be signed by the desired parent Certificate Authority,
-      /// which could be another
-      /// [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority]
-      /// resource, or could be an on-prem certificate authority. See also
-      /// [ActivateCertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthorityService.ActivateCertificateAuthority].
+      /// and is of type [SUBORDINATE][google.cloud.security.privateca.v1.CertificateAuthority.Type.SUBORDINATE]. The
+      /// CSR must then be signed by the desired parent Certificate Authority, which
+      /// could be another [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority] resource, or could be an on-prem
+      /// certificate authority. See also [ActivateCertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthorityService.ActivateCertificateAuthority].
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
       /// <param name="options">The options for the call.</param>
@@ -1257,8 +1169,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return CallInvoker.AsyncUnaryCall(__Method_FetchCertificateAuthorityCsr, null, options, request);
       }
       /// <summary>
-      /// Returns a
-      /// [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority].
+      /// Returns a [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority].
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
       /// <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
@@ -1270,8 +1181,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return GetCertificateAuthority(request, new grpc::CallOptions(headers, deadline, cancellationToken));
       }
       /// <summary>
-      /// Returns a
-      /// [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority].
+      /// Returns a [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority].
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
       /// <param name="options">The options for the call.</param>
@@ -1281,8 +1191,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return CallInvoker.BlockingUnaryCall(__Method_GetCertificateAuthority, null, options, request);
       }
       /// <summary>
-      /// Returns a
-      /// [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority].
+      /// Returns a [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority].
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
       /// <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
@@ -1294,8 +1203,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return GetCertificateAuthorityAsync(request, new grpc::CallOptions(headers, deadline, cancellationToken));
       }
       /// <summary>
-      /// Returns a
-      /// [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority].
+      /// Returns a [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority].
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
       /// <param name="options">The options for the call.</param>
@@ -1305,8 +1213,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return CallInvoker.AsyncUnaryCall(__Method_GetCertificateAuthority, null, options, request);
       }
       /// <summary>
-      /// Lists
-      /// [CertificateAuthorities][google.cloud.security.privateca.v1.CertificateAuthority].
+      /// Lists [CertificateAuthorities][google.cloud.security.privateca.v1.CertificateAuthority].
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
       /// <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
@@ -1318,8 +1225,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return ListCertificateAuthorities(request, new grpc::CallOptions(headers, deadline, cancellationToken));
       }
       /// <summary>
-      /// Lists
-      /// [CertificateAuthorities][google.cloud.security.privateca.v1.CertificateAuthority].
+      /// Lists [CertificateAuthorities][google.cloud.security.privateca.v1.CertificateAuthority].
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
       /// <param name="options">The options for the call.</param>
@@ -1329,8 +1235,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return CallInvoker.BlockingUnaryCall(__Method_ListCertificateAuthorities, null, options, request);
       }
       /// <summary>
-      /// Lists
-      /// [CertificateAuthorities][google.cloud.security.privateca.v1.CertificateAuthority].
+      /// Lists [CertificateAuthorities][google.cloud.security.privateca.v1.CertificateAuthority].
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
       /// <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
@@ -1342,8 +1247,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return ListCertificateAuthoritiesAsync(request, new grpc::CallOptions(headers, deadline, cancellationToken));
       }
       /// <summary>
-      /// Lists
-      /// [CertificateAuthorities][google.cloud.security.privateca.v1.CertificateAuthority].
+      /// Lists [CertificateAuthorities][google.cloud.security.privateca.v1.CertificateAuthority].
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
       /// <param name="options">The options for the call.</param>
@@ -1353,9 +1257,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return CallInvoker.AsyncUnaryCall(__Method_ListCertificateAuthorities, null, options, request);
       }
       /// <summary>
-      /// Undelete a
-      /// [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority]
-      /// that has been deleted.
+      /// Undelete a [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority] that has been deleted.
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
       /// <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
@@ -1367,9 +1269,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return UndeleteCertificateAuthority(request, new grpc::CallOptions(headers, deadline, cancellationToken));
       }
       /// <summary>
-      /// Undelete a
-      /// [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority]
-      /// that has been deleted.
+      /// Undelete a [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority] that has been deleted.
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
       /// <param name="options">The options for the call.</param>
@@ -1379,9 +1279,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return CallInvoker.BlockingUnaryCall(__Method_UndeleteCertificateAuthority, null, options, request);
       }
       /// <summary>
-      /// Undelete a
-      /// [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority]
-      /// that has been deleted.
+      /// Undelete a [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority] that has been deleted.
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
       /// <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
@@ -1393,9 +1291,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return UndeleteCertificateAuthorityAsync(request, new grpc::CallOptions(headers, deadline, cancellationToken));
       }
       /// <summary>
-      /// Undelete a
-      /// [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority]
-      /// that has been deleted.
+      /// Undelete a [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority] that has been deleted.
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
       /// <param name="options">The options for the call.</param>
@@ -1405,8 +1301,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return CallInvoker.AsyncUnaryCall(__Method_UndeleteCertificateAuthority, null, options, request);
       }
       /// <summary>
-      /// Delete a
-      /// [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority].
+      /// Delete a [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority].
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
       /// <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
@@ -1418,8 +1313,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return DeleteCertificateAuthority(request, new grpc::CallOptions(headers, deadline, cancellationToken));
       }
       /// <summary>
-      /// Delete a
-      /// [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority].
+      /// Delete a [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority].
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
       /// <param name="options">The options for the call.</param>
@@ -1429,8 +1323,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return CallInvoker.BlockingUnaryCall(__Method_DeleteCertificateAuthority, null, options, request);
       }
       /// <summary>
-      /// Delete a
-      /// [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority].
+      /// Delete a [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority].
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
       /// <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
@@ -1442,8 +1335,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return DeleteCertificateAuthorityAsync(request, new grpc::CallOptions(headers, deadline, cancellationToken));
       }
       /// <summary>
-      /// Delete a
-      /// [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority].
+      /// Delete a [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority].
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
       /// <param name="options">The options for the call.</param>
@@ -1453,8 +1345,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return CallInvoker.AsyncUnaryCall(__Method_DeleteCertificateAuthority, null, options, request);
       }
       /// <summary>
-      /// Update a
-      /// [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority].
+      /// Update a [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority].
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
       /// <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
@@ -1466,8 +1357,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return UpdateCertificateAuthority(request, new grpc::CallOptions(headers, deadline, cancellationToken));
       }
       /// <summary>
-      /// Update a
-      /// [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority].
+      /// Update a [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority].
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
       /// <param name="options">The options for the call.</param>
@@ -1477,8 +1367,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return CallInvoker.BlockingUnaryCall(__Method_UpdateCertificateAuthority, null, options, request);
       }
       /// <summary>
-      /// Update a
-      /// [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority].
+      /// Update a [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority].
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
       /// <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
@@ -1490,8 +1379,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return UpdateCertificateAuthorityAsync(request, new grpc::CallOptions(headers, deadline, cancellationToken));
       }
       /// <summary>
-      /// Update a
-      /// [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority].
+      /// Update a [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority].
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
       /// <param name="options">The options for the call.</param>
@@ -1721,10 +1609,8 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return CallInvoker.AsyncUnaryCall(__Method_DeleteCaPool, null, options, request);
       }
       /// <summary>
-      /// FetchCaCerts returns the current trust anchor for the
-      /// [CaPool][google.cloud.security.privateca.v1.CaPool]. This will include CA
-      /// certificate chains for all ACTIVE
-      /// [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority]
+      /// FetchCaCerts returns the current trust anchor for the [CaPool][google.cloud.security.privateca.v1.CaPool]. This will
+      /// include CA certificate chains for all ACTIVE [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority]
       /// resources in the [CaPool][google.cloud.security.privateca.v1.CaPool].
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
@@ -1737,10 +1623,8 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return FetchCaCerts(request, new grpc::CallOptions(headers, deadline, cancellationToken));
       }
       /// <summary>
-      /// FetchCaCerts returns the current trust anchor for the
-      /// [CaPool][google.cloud.security.privateca.v1.CaPool]. This will include CA
-      /// certificate chains for all ACTIVE
-      /// [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority]
+      /// FetchCaCerts returns the current trust anchor for the [CaPool][google.cloud.security.privateca.v1.CaPool]. This will
+      /// include CA certificate chains for all ACTIVE [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority]
       /// resources in the [CaPool][google.cloud.security.privateca.v1.CaPool].
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
@@ -1751,10 +1635,8 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return CallInvoker.BlockingUnaryCall(__Method_FetchCaCerts, null, options, request);
       }
       /// <summary>
-      /// FetchCaCerts returns the current trust anchor for the
-      /// [CaPool][google.cloud.security.privateca.v1.CaPool]. This will include CA
-      /// certificate chains for all ACTIVE
-      /// [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority]
+      /// FetchCaCerts returns the current trust anchor for the [CaPool][google.cloud.security.privateca.v1.CaPool]. This will
+      /// include CA certificate chains for all ACTIVE [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority]
       /// resources in the [CaPool][google.cloud.security.privateca.v1.CaPool].
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
@@ -1767,10 +1649,8 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return FetchCaCertsAsync(request, new grpc::CallOptions(headers, deadline, cancellationToken));
       }
       /// <summary>
-      /// FetchCaCerts returns the current trust anchor for the
-      /// [CaPool][google.cloud.security.privateca.v1.CaPool]. This will include CA
-      /// certificate chains for all ACTIVE
-      /// [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority]
+      /// FetchCaCerts returns the current trust anchor for the [CaPool][google.cloud.security.privateca.v1.CaPool]. This will
+      /// include CA certificate chains for all ACTIVE [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority]
       /// resources in the [CaPool][google.cloud.security.privateca.v1.CaPool].
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
@@ -1781,8 +1661,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return CallInvoker.AsyncUnaryCall(__Method_FetchCaCerts, null, options, request);
       }
       /// <summary>
-      /// Returns a
-      /// [CertificateRevocationList][google.cloud.security.privateca.v1.CertificateRevocationList].
+      /// Returns a [CertificateRevocationList][google.cloud.security.privateca.v1.CertificateRevocationList].
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
       /// <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
@@ -1794,8 +1673,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return GetCertificateRevocationList(request, new grpc::CallOptions(headers, deadline, cancellationToken));
       }
       /// <summary>
-      /// Returns a
-      /// [CertificateRevocationList][google.cloud.security.privateca.v1.CertificateRevocationList].
+      /// Returns a [CertificateRevocationList][google.cloud.security.privateca.v1.CertificateRevocationList].
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
       /// <param name="options">The options for the call.</param>
@@ -1805,8 +1683,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return CallInvoker.BlockingUnaryCall(__Method_GetCertificateRevocationList, null, options, request);
       }
       /// <summary>
-      /// Returns a
-      /// [CertificateRevocationList][google.cloud.security.privateca.v1.CertificateRevocationList].
+      /// Returns a [CertificateRevocationList][google.cloud.security.privateca.v1.CertificateRevocationList].
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
       /// <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
@@ -1818,8 +1695,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return GetCertificateRevocationListAsync(request, new grpc::CallOptions(headers, deadline, cancellationToken));
       }
       /// <summary>
-      /// Returns a
-      /// [CertificateRevocationList][google.cloud.security.privateca.v1.CertificateRevocationList].
+      /// Returns a [CertificateRevocationList][google.cloud.security.privateca.v1.CertificateRevocationList].
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
       /// <param name="options">The options for the call.</param>
@@ -1829,8 +1705,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return CallInvoker.AsyncUnaryCall(__Method_GetCertificateRevocationList, null, options, request);
       }
       /// <summary>
-      /// Lists
-      /// [CertificateRevocationLists][google.cloud.security.privateca.v1.CertificateRevocationList].
+      /// Lists [CertificateRevocationLists][google.cloud.security.privateca.v1.CertificateRevocationList].
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
       /// <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
@@ -1842,8 +1717,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return ListCertificateRevocationLists(request, new grpc::CallOptions(headers, deadline, cancellationToken));
       }
       /// <summary>
-      /// Lists
-      /// [CertificateRevocationLists][google.cloud.security.privateca.v1.CertificateRevocationList].
+      /// Lists [CertificateRevocationLists][google.cloud.security.privateca.v1.CertificateRevocationList].
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
       /// <param name="options">The options for the call.</param>
@@ -1853,8 +1727,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return CallInvoker.BlockingUnaryCall(__Method_ListCertificateRevocationLists, null, options, request);
       }
       /// <summary>
-      /// Lists
-      /// [CertificateRevocationLists][google.cloud.security.privateca.v1.CertificateRevocationList].
+      /// Lists [CertificateRevocationLists][google.cloud.security.privateca.v1.CertificateRevocationList].
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
       /// <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
@@ -1866,8 +1739,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return ListCertificateRevocationListsAsync(request, new grpc::CallOptions(headers, deadline, cancellationToken));
       }
       /// <summary>
-      /// Lists
-      /// [CertificateRevocationLists][google.cloud.security.privateca.v1.CertificateRevocationList].
+      /// Lists [CertificateRevocationLists][google.cloud.security.privateca.v1.CertificateRevocationList].
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
       /// <param name="options">The options for the call.</param>
@@ -1877,8 +1749,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return CallInvoker.AsyncUnaryCall(__Method_ListCertificateRevocationLists, null, options, request);
       }
       /// <summary>
-      /// Update a
-      /// [CertificateRevocationList][google.cloud.security.privateca.v1.CertificateRevocationList].
+      /// Update a [CertificateRevocationList][google.cloud.security.privateca.v1.CertificateRevocationList].
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
       /// <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
@@ -1890,8 +1761,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return UpdateCertificateRevocationList(request, new grpc::CallOptions(headers, deadline, cancellationToken));
       }
       /// <summary>
-      /// Update a
-      /// [CertificateRevocationList][google.cloud.security.privateca.v1.CertificateRevocationList].
+      /// Update a [CertificateRevocationList][google.cloud.security.privateca.v1.CertificateRevocationList].
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
       /// <param name="options">The options for the call.</param>
@@ -1901,8 +1771,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return CallInvoker.BlockingUnaryCall(__Method_UpdateCertificateRevocationList, null, options, request);
       }
       /// <summary>
-      /// Update a
-      /// [CertificateRevocationList][google.cloud.security.privateca.v1.CertificateRevocationList].
+      /// Update a [CertificateRevocationList][google.cloud.security.privateca.v1.CertificateRevocationList].
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
       /// <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
@@ -1914,8 +1783,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return UpdateCertificateRevocationListAsync(request, new grpc::CallOptions(headers, deadline, cancellationToken));
       }
       /// <summary>
-      /// Update a
-      /// [CertificateRevocationList][google.cloud.security.privateca.v1.CertificateRevocationList].
+      /// Update a [CertificateRevocationList][google.cloud.security.privateca.v1.CertificateRevocationList].
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
       /// <param name="options">The options for the call.</param>
@@ -1925,9 +1793,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return CallInvoker.AsyncUnaryCall(__Method_UpdateCertificateRevocationList, null, options, request);
       }
       /// <summary>
-      /// Create a new
-      /// [CertificateTemplate][google.cloud.security.privateca.v1.CertificateTemplate]
-      /// in a given Project and Location.
+      /// Create a new [CertificateTemplate][google.cloud.security.privateca.v1.CertificateTemplate] in a given Project and Location.
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
       /// <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
@@ -1939,9 +1805,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return CreateCertificateTemplate(request, new grpc::CallOptions(headers, deadline, cancellationToken));
       }
       /// <summary>
-      /// Create a new
-      /// [CertificateTemplate][google.cloud.security.privateca.v1.CertificateTemplate]
-      /// in a given Project and Location.
+      /// Create a new [CertificateTemplate][google.cloud.security.privateca.v1.CertificateTemplate] in a given Project and Location.
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
       /// <param name="options">The options for the call.</param>
@@ -1951,9 +1815,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return CallInvoker.BlockingUnaryCall(__Method_CreateCertificateTemplate, null, options, request);
       }
       /// <summary>
-      /// Create a new
-      /// [CertificateTemplate][google.cloud.security.privateca.v1.CertificateTemplate]
-      /// in a given Project and Location.
+      /// Create a new [CertificateTemplate][google.cloud.security.privateca.v1.CertificateTemplate] in a given Project and Location.
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
       /// <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
@@ -1965,9 +1827,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return CreateCertificateTemplateAsync(request, new grpc::CallOptions(headers, deadline, cancellationToken));
       }
       /// <summary>
-      /// Create a new
-      /// [CertificateTemplate][google.cloud.security.privateca.v1.CertificateTemplate]
-      /// in a given Project and Location.
+      /// Create a new [CertificateTemplate][google.cloud.security.privateca.v1.CertificateTemplate] in a given Project and Location.
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
       /// <param name="options">The options for the call.</param>
@@ -1977,8 +1837,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return CallInvoker.AsyncUnaryCall(__Method_CreateCertificateTemplate, null, options, request);
       }
       /// <summary>
-      /// DeleteCertificateTemplate deletes a
-      /// [CertificateTemplate][google.cloud.security.privateca.v1.CertificateTemplate].
+      /// DeleteCertificateTemplate deletes a [CertificateTemplate][google.cloud.security.privateca.v1.CertificateTemplate].
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
       /// <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
@@ -1990,8 +1849,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return DeleteCertificateTemplate(request, new grpc::CallOptions(headers, deadline, cancellationToken));
       }
       /// <summary>
-      /// DeleteCertificateTemplate deletes a
-      /// [CertificateTemplate][google.cloud.security.privateca.v1.CertificateTemplate].
+      /// DeleteCertificateTemplate deletes a [CertificateTemplate][google.cloud.security.privateca.v1.CertificateTemplate].
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
       /// <param name="options">The options for the call.</param>
@@ -2001,8 +1859,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return CallInvoker.BlockingUnaryCall(__Method_DeleteCertificateTemplate, null, options, request);
       }
       /// <summary>
-      /// DeleteCertificateTemplate deletes a
-      /// [CertificateTemplate][google.cloud.security.privateca.v1.CertificateTemplate].
+      /// DeleteCertificateTemplate deletes a [CertificateTemplate][google.cloud.security.privateca.v1.CertificateTemplate].
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
       /// <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
@@ -2014,8 +1871,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return DeleteCertificateTemplateAsync(request, new grpc::CallOptions(headers, deadline, cancellationToken));
       }
       /// <summary>
-      /// DeleteCertificateTemplate deletes a
-      /// [CertificateTemplate][google.cloud.security.privateca.v1.CertificateTemplate].
+      /// DeleteCertificateTemplate deletes a [CertificateTemplate][google.cloud.security.privateca.v1.CertificateTemplate].
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
       /// <param name="options">The options for the call.</param>
@@ -2025,8 +1881,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return CallInvoker.AsyncUnaryCall(__Method_DeleteCertificateTemplate, null, options, request);
       }
       /// <summary>
-      /// Returns a
-      /// [CertificateTemplate][google.cloud.security.privateca.v1.CertificateTemplate].
+      /// Returns a [CertificateTemplate][google.cloud.security.privateca.v1.CertificateTemplate].
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
       /// <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
@@ -2038,8 +1893,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return GetCertificateTemplate(request, new grpc::CallOptions(headers, deadline, cancellationToken));
       }
       /// <summary>
-      /// Returns a
-      /// [CertificateTemplate][google.cloud.security.privateca.v1.CertificateTemplate].
+      /// Returns a [CertificateTemplate][google.cloud.security.privateca.v1.CertificateTemplate].
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
       /// <param name="options">The options for the call.</param>
@@ -2049,8 +1903,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return CallInvoker.BlockingUnaryCall(__Method_GetCertificateTemplate, null, options, request);
       }
       /// <summary>
-      /// Returns a
-      /// [CertificateTemplate][google.cloud.security.privateca.v1.CertificateTemplate].
+      /// Returns a [CertificateTemplate][google.cloud.security.privateca.v1.CertificateTemplate].
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
       /// <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
@@ -2062,8 +1915,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return GetCertificateTemplateAsync(request, new grpc::CallOptions(headers, deadline, cancellationToken));
       }
       /// <summary>
-      /// Returns a
-      /// [CertificateTemplate][google.cloud.security.privateca.v1.CertificateTemplate].
+      /// Returns a [CertificateTemplate][google.cloud.security.privateca.v1.CertificateTemplate].
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
       /// <param name="options">The options for the call.</param>
@@ -2073,8 +1925,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return CallInvoker.AsyncUnaryCall(__Method_GetCertificateTemplate, null, options, request);
       }
       /// <summary>
-      /// Lists
-      /// [CertificateTemplates][google.cloud.security.privateca.v1.CertificateTemplate].
+      /// Lists [CertificateTemplates][google.cloud.security.privateca.v1.CertificateTemplate].
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
       /// <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
@@ -2086,8 +1937,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return ListCertificateTemplates(request, new grpc::CallOptions(headers, deadline, cancellationToken));
       }
       /// <summary>
-      /// Lists
-      /// [CertificateTemplates][google.cloud.security.privateca.v1.CertificateTemplate].
+      /// Lists [CertificateTemplates][google.cloud.security.privateca.v1.CertificateTemplate].
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
       /// <param name="options">The options for the call.</param>
@@ -2097,8 +1947,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return CallInvoker.BlockingUnaryCall(__Method_ListCertificateTemplates, null, options, request);
       }
       /// <summary>
-      /// Lists
-      /// [CertificateTemplates][google.cloud.security.privateca.v1.CertificateTemplate].
+      /// Lists [CertificateTemplates][google.cloud.security.privateca.v1.CertificateTemplate].
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
       /// <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
@@ -2110,8 +1959,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return ListCertificateTemplatesAsync(request, new grpc::CallOptions(headers, deadline, cancellationToken));
       }
       /// <summary>
-      /// Lists
-      /// [CertificateTemplates][google.cloud.security.privateca.v1.CertificateTemplate].
+      /// Lists [CertificateTemplates][google.cloud.security.privateca.v1.CertificateTemplate].
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
       /// <param name="options">The options for the call.</param>
@@ -2121,8 +1969,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return CallInvoker.AsyncUnaryCall(__Method_ListCertificateTemplates, null, options, request);
       }
       /// <summary>
-      /// Update a
-      /// [CertificateTemplate][google.cloud.security.privateca.v1.CertificateTemplate].
+      /// Update a [CertificateTemplate][google.cloud.security.privateca.v1.CertificateTemplate].
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
       /// <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
@@ -2134,8 +1981,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return UpdateCertificateTemplate(request, new grpc::CallOptions(headers, deadline, cancellationToken));
       }
       /// <summary>
-      /// Update a
-      /// [CertificateTemplate][google.cloud.security.privateca.v1.CertificateTemplate].
+      /// Update a [CertificateTemplate][google.cloud.security.privateca.v1.CertificateTemplate].
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
       /// <param name="options">The options for the call.</param>
@@ -2145,8 +1991,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return CallInvoker.BlockingUnaryCall(__Method_UpdateCertificateTemplate, null, options, request);
       }
       /// <summary>
-      /// Update a
-      /// [CertificateTemplate][google.cloud.security.privateca.v1.CertificateTemplate].
+      /// Update a [CertificateTemplate][google.cloud.security.privateca.v1.CertificateTemplate].
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
       /// <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
@@ -2158,8 +2003,7 @@ namespace Google.Cloud.Security.PrivateCA.V1 {
         return UpdateCertificateTemplateAsync(request, new grpc::CallOptions(headers, deadline, cancellationToken));
       }
       /// <summary>
-      /// Update a
-      /// [CertificateTemplate][google.cloud.security.privateca.v1.CertificateTemplate].
+      /// Update a [CertificateTemplate][google.cloud.security.privateca.v1.CertificateTemplate].
       /// </summary>
       /// <param name="request">The request to send to the server.</param>
       /// <param name="options">The options for the call.</param>
