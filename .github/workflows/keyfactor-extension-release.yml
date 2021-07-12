@@ -66,6 +66,7 @@ jobs:
         with:
           release_name: Release 1.0
           body: |
+            1.0.1 - Update Assembly version number. No functionallity change. 
             [Changelog](../main/CHANGELOG.md)
           draft: false
           prerelease: false
