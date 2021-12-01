@@ -1,11 +1,24 @@
-# Introduction 
-The  [Google Certificate Authority Service](https://cloud.google.com/certificate-authority-service) is a highly available, scalable Google Cloud service that enables you to simplify, automate, and customize the deployment, management, and security of private certificate authorities (CA).
+# Google Cloud CA
+## Ca-gateway
+
+The Google Cloud Gateway enables the following certificate authority management functions via Keyfactor Command: PFX & CSR Enrollment, Revocation, and Synchronization (Full & Incremental)
+<!-- add integration specific information below -->
+*** 
+
+# Notes
+See the Google website for details on the Google Certificate Authority Service](https://cloud.google.com/certificate-authority-service)
+
 It should be noted that currently, due to the design of the DevOps tier of CA, Enterprise tier CAs are only supported by the AnyGateway. 
+
+# Compatibility
+This AnyGateway is designed to be used with version 21.3.2 of the Keyfactor AnyGateway Framework
+
 # Prerequsites
 ## [Authentication](https://cloud.google.com/docs/authentication/production)
-A JSON file generated for a Google Service Account will need to be created and placed on the AnyGateway Server. The path of this file into the GOOGLE_APPLICATION_CREDENTIALS environment variable to be used during a CA session. Since the 
-AnyGateway is requried to run as the Network Service account, the registry will need to be modified to provide the service acess to the Envrionment variable above. The GOOGLE_APPLICATION_CREDENTIALS variable should be placed in the following 
-registry location and read access provided:
+A JSON file generated for a Google Service Account will need to be created and placed on the AnyGateway Server.
+The path of this file into the GOOGLE_APPLICATION_CREDENTIALS environment variable to be used during a CA session.
+Since the AnyGateway is required to run as the Network Service account, the registry will need to be modified to provide the service access to the Environment variable above.
+The GOOGLE_APPLICATION_CREDENTIALS variable should be placed in the following registry location and read access provided:
 
 * HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\Environment
 
@@ -41,13 +54,16 @@ In order to enroll for certificates the Keyfactor Command server must trust the 
   ```xml
   <alias alias="CAConnector" type="Keyfactor.AnyGateway.Google.GoogleCAProxy, GoogleCAProxy"/>
   ```
-  * Depending on the version of the AnyCA Gateway installed, addtional binding redirects may need to be applied from the app.config. These redirections will be added to the CAProxyServer.config file 
+  * Depending on the version of the AnyCA Gateway installed, additional binding redirects may need to be applied from the app.config. These redirections will be added to the CAProxyServer.config file 
 
 # Configuration
 The following sections will breakdown the required configurations for the AnyGatewayConfig.json file that will be imported to configure the Google CA. 
 
 ## Templates
-The Google CA has introduced the concept of Templates for the V1 release. the product ID mapped below must be the Template Name from the cloud console. The API does not provide certificate lifetime information, but any value can be placed here.  If the value is over the configured value, the Google CA will set to the maximum value as determined by the template configuration. 
+The Google CA has introduced the concept of Templates for the V1 release.
+The product ID mapped below must be the Template Name from the cloud console.
+The API does not provide certificate lifetime information, but any value can be placed here.
+If the value is over the configured value, the Google CA will set to the maximum value as determined by the template configuration. 
  ```json
    "Templates": {
     "GoogleCAWebServer": {
@@ -59,7 +75,7 @@ The Google CA has introduced the concept of Templates for the V1 release. the pr
 }
  ```
 ## Security
-The security section does not change specificly for the Google CA.  Refer to the [AnyGateway Documentation](https://kfeaus00web-01.corp.keyfactor.com/keyfactordocs/AnyGateway/v20.9/Generic/Content/AnyGateway/Introduction.htm) for more detail
+The security section does not change specifically for the Google CA. Refer to the Keyfactor AnyGateway Documentation for more detail
 ```json
   /*Grant permissions on the CA to users or groups in the local domain.
 	READ: Enumerate and read contents of certificates.
@@ -124,7 +140,7 @@ The CA Connection section will determine which CA in the Google cloud is integra
 * ProjectId  
 This is the Resource ID of the project that contains the Google CA Service
 * LocationId  
-This is the resource ID of the geograpical location (i.e. us-east1) within the Google Cloud
+This is the resource ID of the geographical location (i.e. us-east1) within the Google Cloud
 * CAId  
 This is the resource Id of the CA created using the [Google Cloud Console](https://console.cloud.google.com)
 * CAPoolId
@@ -139,7 +155,7 @@ This is the resource id of the CA Pool created using the [Google Cloud Console](
 }
 ```
 ## GatewayRegistration
-There are no Google Specific Changes for the GatewayRegistration section. Refer to the [AnyGateway Documentation](https://kfeaus00web-01.corp.keyfactor.com/keyfactordocs/AnyGateway/v20.9/Generic/Content/AnyGateway/Introduction.htm) for more detail on required changed to support the AnyCA Gateway
+There are no Google Specific Changes for the GatewayRegistration section. Refer to the Keyfactor AnyGateway Documentation for more detail on required changed to support the AnyCA Gateway
 ```json
   "GatewayRegistration": {
     "LogicalName": "GoogleCASandbox",
@@ -152,7 +168,7 @@ There are no Google Specific Changes for the GatewayRegistration section. Refer 
 ```
 
 ## ServiceSettings
-There are no Google Specific Changes for the GatewayRegistration section. Refer to the [AnyGateway Documentation](https://kfeaus00web-01.corp.keyfactor.com/keyfactordocs/AnyGateway/v20.9/Generic/Content/AnyGateway/Introduction.htm) for more detail on required changed to support the AnyCA Gateway
+There are no Google Specific Changes for the GatewayRegistration section. Refer to the Keyfactor AnyGateway Documentation for more detail on required changed to support the AnyCA Gateway
 ```json
   "ServiceSettings": {
     "ViewIdleMinutes": 8,
