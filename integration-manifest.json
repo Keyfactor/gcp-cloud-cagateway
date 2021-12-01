@@ -1,0 +1,8 @@
+{
+  "$schema": "https://keyfactor.github.io/integration-manifest-schema.json",
+  "integration_type": "ca-gateway",
+  "name": "Google Cloud CA",
+  "status": "production",
+  "description": "The Google Cloud Gateway enables the following certificate authority management functions via Keyfactor Command: PFX & CSR Enrollment, Revocation, and Synchronization (Full & Incremental)",
+  "link_github": true
+}
