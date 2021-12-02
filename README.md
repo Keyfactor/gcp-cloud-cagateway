@@ -6,7 +6,7 @@ The Google Cloud Gateway enables the following certificate authority management 
 *** 
 
 # Notes
-See the Google website for details on the Google Certificate Authority Service](https://cloud.google.com/certificate-authority-service)
+See the Google website for details on the [Google Certificate Authority Service](https://cloud.google.com/certificate-authority-service)
 
 It should be noted that currently, due to the design of the DevOps tier of CA, Enterprise tier CAs are only supported by the AnyGateway. 
 
