@@ -67,7 +67,7 @@ If the value is over the configured value, the Google CA will set to the maximum
  ```json
    "Templates": {
     "GoogleCAWebServer": {
-      "ProductID": "GatewayProductID",/*resource id of the certificate template if applicahble. Required field for the AnyCA Gateway framework*/
+      "ProductID": "", /*Value not used, so set to empty string. 'ProductID' element must be present.*/
       "Parameters": {
         "Lifetime": "300",/*days*/
       }
@@ -142,7 +142,7 @@ This is the Resource ID of the project that contains the Google CA Service
 * LocationId  
 This is the resource ID of the geographical location (i.e. us-east1) within the Google Cloud
 * CAId  
-This is the resource Id of the CA created using the [Google Cloud Console](https://console.cloud.google.com)
+This is the resource Id of any one of the CAs created in the CA pool using the [Google Cloud Console](https://console.cloud.google.com)
 * CAPoolId
 This is the resource id of the CA Pool created using the [Google Cloud Console](https://console.cloud.google.com)
 
