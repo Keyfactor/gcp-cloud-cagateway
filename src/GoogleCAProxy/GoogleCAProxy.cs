@@ -72,9 +72,9 @@ namespace Keyfactor.AnyGateway.Google
 
                 GcpClient = BuildClient();
                 
-                var template = GcpClient.GetCertificateTemplate(productInfo.ProductID);
+                //var template = GcpClient.GetCertificateTemplate(productInfo.ProductID);
                 
-                Logger.Trace($"Template {template.Name} found for enrollment");              
+                //Logger.Trace($"Template {template.Name} found for enrollment");              
               
                 var caPoolAsTypedName = CaPoolName.FromProjectLocationCaPool(ProjectId, LocationId, CAPoolId);
 
@@ -136,7 +136,7 @@ namespace Keyfactor.AnyGateway.Google
             try
             {
                 GcpClient = BuildClient();
-                var cloudCert = GcpClient.GetCertificate(new CertificateName(ProjectId, LocationId, CAId, caRequestID));
+                var cloudCert = GcpClient.GetCertificate(new CertificateName(ProjectId, LocationId, CAPoolId, caRequestID));
 
                 return ProcessCAResponse(cloudCert);
             }
@@ -194,7 +194,7 @@ namespace Keyfactor.AnyGateway.Google
             try
             {
                 GcpClient = BuildClient();
-                CertificateName certId = new CertificateName(ProjectId, LocationId, CAId, caRequestID);
+                CertificateName certId = new CertificateName(ProjectId, LocationId, CAPoolId, caRequestID);
 
                 RevokeCertificateRequest request = new RevokeCertificateRequest()
                 { 
@@ -204,17 +204,18 @@ namespace Keyfactor.AnyGateway.Google
 
                 Logger.Trace($"Revoking certificate id {certId}");
                 var response = GcpClient.RevokeCertificate(request);
-                return 21;
+                return Convert.ToInt32(PKIConstants.Microsoft.RequestDisposition.REVOKED);
+                ;
             }
             catch (RpcException gEx)
             {
                 Logger.Error($"Unable to revoke certificate. Status Code: {gEx.StatusCode} | Status:{gEx.Status}");
-                return -1;
+                throw gEx;
             }
             catch (Exception ex)
             {
                 Logger.Error($"Unable to revoke certificate. {ex.Message}");
-                return -1;
+                throw ex;
             }
         }
 

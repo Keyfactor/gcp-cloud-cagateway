@@ -2,13 +2,19 @@
 
 name: Keyfactor Extension - Release
 
+env:
+  SOLUTION_FOLDER: '.'
+  PROJECT_FOLDER: 'src/GoogleCAProxy'
+
 # Controls when the action will run. 
 on:
-  # Triggers the workflow on push
-  push:
-    #only run this workflow when pushing to a branch that contains a release number. ignore -pre
+  # Triggers the workflow on pull requests closing
+  pull_request:
+    # only run this workflow when closing a PR to a branch that contains a release number. ignore -pre
     branches: 
-        - 'release-[1-9].[0-9]+' 
+        - 'release-[0-9]+.[0-9]+' 
+        - '!release-[0-9]+.[0-9]+-pre'
+    types: [closed]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -17,6 +23,9 @@ on:
 jobs:
   # This workflow contains a single job called "build"
   build:
+      # run if pull request is completed and merged, or if manually dispatched
+    if:  github.event_name == 'workflow_dispatch' || (github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true)
+
     # The type of runner that the job will run on
     runs-on: windows-latest
 
@@ -31,14 +40,17 @@ jobs:
             echo "Setup Envrionment Variables for Workflow"
             echo "Working Path: ${Env:GITHUB_WORKSPACE}"
             $slnPath = (Get-ChildItem -Include *.sln -File -Recurse).fullname
-            $relName = "${{ github.ref }}".Split("-")
+            $relName = "${{ github.ref }}".Split("/")
             $repoName = "${{ github.repository }}".Split("/")
+            $relVersion = "${{ github.ref }}".Split("-")
             echo "Solution File Path: ${slnPath}"
             echo "SOLUTION_PATH=${slnPath}" | Out-File $env:GITHUB_ENV -Encoding utf8 -Append
             echo "Release Name: $($relName[-1])"
             echo "RELEASE_NAME=$($relName[-1])" | Out-File $env:GITHUB_ENV -Encoding utf8 -Append
             echo "Repo Name: $($repoName[-1])"
             echo "REPO_NAME=$($repoName[-1])" | Out-File $env:GITHUB_ENV -Encoding utf8 -Append
+            echo "Release Version: $($relVersion[-1])"
+            echo "RELEASE_VERSION=$($relVersion[-1])" | Out-File $env:GITHUB_ENV -Encoding utf8 -Append
         
       - uses: actions/setup-dotnet@v1
         with:
@@ -57,42 +69,48 @@ jobs:
       - name: restore nuget packages
         run: |
           nuget restore ${{ env.SOLUTION_PATH  }}
-      
+          
       - name: Create Release
         id: create_release
-        uses: zendesk/action-create-release@v1
+        #uses: zendesk/action-create-release@v1
+        uses: keyfactor/action-create-release@786b73035fa09790f9eb11bb86834a6d7af1c256
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          release_name: Release 1.0
+          release_name: ${{ env.REPO_NAME }} ${{ env.RELEASE_VERSION }}
           body: |
-            1.0.1 - Update Assembly version number. No functionallity change. 
-            [Changelog](../main/CHANGELOG.md)
+            [Changelog](../CHANGELOG.md)
           draft: false
           prerelease: false
           auto_increment_type: patch
           tag_schema: semantic
+          commitish: ${{ github.sha }}          
       
-      #update version number of AssemblyInfo.cs file
+      # update version number of AssemblyInfo.cs file
       - name: Increment Assembly Version
         run: |
             $VersionRegex = "\d+\.\d+\.\d+"
-            #need to deal with multiple cs files for test harnesses, etc
-            $assemlyFilePath = "${{ github.workspace }}\src\GoogleCAProxy\Properties\AssemblyInfo.cs"
-            $filecontent = Get-Content($assemlyFilePath)
-            $newVer = "${{ steps.create_release.outputs.current_tag }}".TrimStart('v').TrimEnd('-beta')
-            attrib $assemlyFilePath -r
-            $filecontent -replace $VersionRegex, $newVer | Out-File $assemlyFilePath
+            $assemblyInfoFiles = (Get-ChildItem -Include AssemblyInfo.cs -File -Recurse).fullname
+            $newVer = "${{ steps.create_release.outputs.current_tag }}".TrimStart('v').Split('-')[0]
+            echo "Prepared to overwrite Assembly version to: ${newVer}"
+            foreach ($assemblyInfoFile in $assemblyInfoFiles)
+            {
+              $filecontent = Get-Content($assemblyInfoFile)
+              attrib $assemblyInfoFile -r
+              $filecontent -replace $VersionRegex, $newVer | Out-File $assemblyInfoFile
+            }
       
       - name: Execute MSBuild Commands
         run: |
-          MSBuild.exe $Env:SOLUTION_PATH -p:RestorePackagesConfig=true -p:Configuration=Release       
+          MSBuild.exe $Env:SOLUTION_PATH -p:RestorePackagesConfig=false -p:Configuration=Release       
       
       - name: Archive Files
         if: ${{ success() }}
         run: |
            md ${{ github.workspace }}\zip\Keyfactor
-           Compress-Archive -Path ${{ github.workspace }}\src\GoogleCAProxy\bin\Release\*.dll,${{ github.workspace }}\src\GoogleCAProxy\bin\Release\app.config -DestinationPath ${{ github.workspace }}\zip\Keyfactor\$Env:REPO_NAME.zip -Force      
+           Compress-Archive -Path `
+           ${{ env.SOLUTION_FOLDER }}\${{ env.PROJECT_FOLDER }}\bin\Release\* `
+           -DestinationPath ${{ github.workspace }}\zip\Keyfactor\$Env:REPO_NAME.zip -Force      
       
       - name: Upload Release Asset (x64)
         if: ${{ success() }}
@@ -106,11 +124,11 @@ jobs:
           asset_name: ${{ env.REPO_NAME}}_${{ steps.create_release.outputs.current_tag }}.zip
           asset_content_type: application/zip                 
       
-      - name: On Failure Remove Tags and Release
+      - name: On Failure - Remove Tags and Release
         if: ${{ failure() }}
         uses: dev-drprasad/delete-tag-and-release@v0.2.0
         with:
             delete_release: true # default: false
             tag_name: ${{ steps.create_release.outputs.current_tag }}
         env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}           
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}     
