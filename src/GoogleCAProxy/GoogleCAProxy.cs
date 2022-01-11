@@ -247,7 +247,7 @@ namespace Keyfactor.AnyGateway.Google
 
                 ListCertificatesRequest syncRequest = new ListCertificatesRequest()
                 {
-                    ParentAsCaPoolName = CaPoolName.FromProjectLocationCaPool(ProjectId,LocationId,CAPoolId),
+                    ParentAsCaPoolName = CaPoolName.FromProjectLocationCaPool(ProjectId,LocationId,CAPoolId)
                 };
 
                 if (!certificateAuthoritySyncInfo.DoFullSync)
@@ -256,7 +256,6 @@ namespace Keyfactor.AnyGateway.Google
                     Logger.Trace($"Executing an incremental sync.  Filter list by update_time >= {lastSyncTime.ToDateTime().ToLocalTime()}");
                     syncRequest.Filter = $"update_time >= {lastSyncTime}";
                 }
-
                 var responseList = GcpClient.ListCertificates(syncRequest); 
                 ProcessCertificateList(responseList, blockingBuffer, cancelToken);
             }
@@ -513,6 +512,7 @@ namespace Keyfactor.AnyGateway.Google
             {
                 CredentialsPath = Environment.GetEnvironmentVariable(AUTH_ENV_VARIABLE_NAME, EnvironmentVariableTarget.Machine)
             };
+            caClient.GrpcChannelOptions = caClient.GrpcChannelOptions.WithMaxReceiveMessageSize(1024 * 1024 * 12);
             return caClient.Build();
         }
 
