@@ -13,7 +13,7 @@ It should be noted that currently, due to the design of the DevOps tier of CA, E
 # Compatibility
 This AnyGateway is designed to be used with version 21.3.2 of the Keyfactor AnyGateway Framework
 
-# Prerequsites
+# Prerequisites
 ## [Authentication](https://cloud.google.com/docs/authentication/production)
 A JSON file generated for a Google Service Account will need to be created and placed on the AnyGateway Server.
 The path of this file into the GOOGLE_APPLICATION_CREDENTIALS environment variable to be used during a CA session.
@@ -40,7 +40,7 @@ Currently the only method supported for authentication is a Service Credential w
 * resourcemanager.projects.get
 
 ## Certificate Chain
-In order to enroll for certificates the Keyfactor Command server must trust the Private CA chain.  Once you create your Root and/or Subordinate CA, make sure to import the certifiate chain into the Command Server certificate store
+In order to enroll for certificates the Keyfactor Command server must trust the Private CA chain.  Once you create your Root and/or Subordinate CA, make sure to import the certificate chain into the Command Server certificate store
 
 # Install
 * Install the AnyCA Gateway Framework using the MSI from the Software Download Portal
