@@ -1,8 +1,15 @@
 # Google Cloud CA
-## Ca-gateway
 
 The Google Cloud Gateway enables the following certificate authority management functions via Keyfactor Command: PFX & CSR Enrollment, Revocation, and Synchronization (Full & Incremental)
-<!-- add integration specific information below -->
+
+#### Integration status: Production - Ready for use in production environments.
+
+## About the Keyfactor 
+
+
+
+---
+
 *** 
 
 # Notes
