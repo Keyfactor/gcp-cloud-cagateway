@@ -1,8 +1,16 @@
 # Google Cloud CA
-## Ca-gateway
 
 The Google Cloud Gateway enables the following certificate authority management functions via Keyfactor Command: PFX & CSR Enrollment, Revocation, and Synchronization (Full & Incremental)
-<!-- add integration specific information below -->
+
+#### Integration status: Production - Ready for use in production environments.
+
+## About the Keyfactor AnyGateway CA Connector
+
+This repository contains an AnyGateway CA Connector, which is a plugin to the Keyfactor AnyGateway. AnyGateway CA Connectors allow Keyfactor Command to be used for inventory, issuance, and revocation of certificates from a third-party certificate authority.
+
+---
+## integration_type = ca-gateway
+
 *** 
 
 # Notes
@@ -176,3 +184,6 @@ There are no Google Specific Changes for the GatewayRegistration section. Refer 
 	"PartialScanPeriodMinutes": 60
   }
 ```
+
+
+
