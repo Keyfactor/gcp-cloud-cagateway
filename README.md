@@ -8,8 +8,9 @@ The Google Cloud Gateway enables the following certificate authority management 
 
 This repository contains an AnyGateway CA Connector, which is a plugin to the Keyfactor AnyGateway. AnyGateway CA Connectors allow Keyfactor Command to be used for inventory, issuance, and revocation of certificates from a third-party certificate authority.
 
----
-## integration_type = ca-gateway
+
+
+
 
 *** 
 
@@ -184,6 +185,4 @@ There are no Google Specific Changes for the GatewayRegistration section. Refer 
 	"PartialScanPeriodMinutes": 60
   }
 ```
-
-
 
