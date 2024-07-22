@@ -3,18 +3,16 @@ using CAProxy.AnyGateway.Interfaces;
 using CAProxy.AnyGateway.Models;
 using CAProxy.Common;
 using CSS.PKI;
+using CSS.Common.Logging;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-//TODO Update for V1
 using Google.Cloud.Security.PrivateCA.V1;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Google.Api.Gax;
-using CSS.Common.Logging;
-
 
 namespace Keyfactor.AnyGateway.Google
 {
