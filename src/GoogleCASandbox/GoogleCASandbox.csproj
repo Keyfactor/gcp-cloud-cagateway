@@ -90,7 +90,7 @@
     <PackageReference Include="Google.Protobuf" Version="3.14.0" />
     <PackageReference Include="Grpc.Core" Version="2.34.0" />
     <PackageReference Include="Grpc.Core.Api" Version="2.34.0" />
-    <PackageReference Include="Keyfactor.AnyGateway.SDK" Version="20.9.0">
+    <PackageReference Include="Keyfactor.AnyGateway.SDK" Version="24.2.0-PRERELEASE-47446">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

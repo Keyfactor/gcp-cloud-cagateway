@@ -10,17 +10,16 @@
     <RootNamespace>Keyfactor.AnyGateway.Google</RootNamespace>
     <AssemblyName>GoogleCAProxy</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-    <TargetFramework>net472</TargetFramework>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>bin\Debug</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -34,20 +33,20 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <PreBuildEvent>Powershell C:\Users\kfadmin\Documents\StopCaGateway.ps1</PreBuildEvent>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Prerelease|AnyCPU'">
-    <OutputPath>bin\Prerelease\</OutputPath>
+  <PropertyGroup>
+    <PostBuildEvent>Powershell C:\Users\kfadmin\Documents\StartCaGateway.ps1</PostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CAProxy.AnyGateway.Core, Version=24.2.0.0">
-      <HintPath>$(NugetPackagesPath)Keyfactor.AnyGateway.SDK.24.2.0-prerelease-47446\lib\net472\CAProxy.AnyGateway.Core.dll</HintPath>
+    <Reference Include="CAProxy.AnyGateway.Core, Version=24.2.0.0, Culture=neutral, PublicKeyToken=0ed89d330114ab09, processorArchitecture=MSIL">
+      <HintPath>packages\Keyfactor.AnyGateway.SDK.24.2.0.24.2.0-PRERELEASE-47446\lib\net472\CAProxy.AnyGateway.Core.dll</HintPath>
     </Reference>
-    <Reference Include="CAProxy.Interfaces, Version=24.2.0.0">
-      <HintPath>..\packages\Keyfactor.AnyGateway.SDK.24.2.0-prerelease-47446\lib\net472\CAProxy.Interfaces.dll</HintPath>
+    <Reference Include="CAProxy.Interfaces, Version=24.2.0.0, Culture=neutral, PublicKeyToken=0ed89d330114ab09, processorArchitecture=MSIL">
+      <HintPath>packages\Keyfactor.AnyGateway.SDK.24.2.0.24.2.0-PRERELEASE-47446\lib\net472\CAProxy.Interfaces.dll</HintPath>
     </Reference>
-    <Reference Include="CommonCAProxy, Version=24.2.0.0">
-      <HintPath>$(NugetPackagesPath)Keyfactor.AnyGateway.SDK.24.2.0-prerelease-47446\lib\net472\CommonCAProxy.dll</HintPath>
+    <Reference Include="CommonCAProxy, Version=24.2.0.0, Culture=neutral, PublicKeyToken=0ed89d330114ab09, processorArchitecture=MSIL">
+      <HintPath>packages\Keyfactor.AnyGateway.SDK.24.2.0.24.2.0-PRERELEASE-47446\lib\net472\CommonCAProxy.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -60,38 +59,36 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ExtensionMethods.cs" />
-    <Compile Include="GcpLogger.cs" />
     <Compile Include="GoogleCAProxy.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Config\" />
+    <Compile Include="ExtensionMethods.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Common.Logging" Version="3.4.1" />
     <PackageReference Include="Common.Logging.Core" Version="3.4.1.0" />
     <PackageReference Include="CSS.Common" Version="1.7.0" />
     <PackageReference Include="CSS.PKI" Version="2.13.0" />
-    <PackageReference Include="Google.Apis" Version="1.52.0" />
-    <PackageReference Include="Google.Apis.Core" Version="1.52.0" />
-    <PackageReference Include="Google.Cloud.Security.PrivateCA.V1" Version="1.0.0" />
-    <PackageReference Include="Google.Protobuf" Version="3.15.8" />
-    <PackageReference Include="Grpc.Auth" Version="2.38.0" />
-    <PackageReference Include="Grpc.Core" Version="2.38.0" />
-    <PackageReference Include="Grpc.Core.Api" Version="2.38.0" />
+    <PackageReference Include="Google.Cloud.Security.PrivateCA.V1" Version="3.9.0" />
     <PackageReference Include="Keyfactor.AnyGateway.SDK" Version="24.2.0-PRERELEASE-47446">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Keyfactor.Logging" Version="1.1.2" />
+    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="5.0.0" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.4" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="System.Buffers" Version="4.5.1" />
+    <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="5.0.0" />
     <PackageReference Include="System.Memory" Version="4.5.4" />
     <PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />
-    <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="5.02.0" />
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="5.0.0" />
+    <PackageReference Include="System.Security.AccessControl" Version="6.0.1" />
     <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.4" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Config\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
