@@ -23,6 +23,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <UseWinFormsOutOfProcDesigner>False</UseWinFormsOutOfProcDesigner>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -31,16 +32,17 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <UseWinFormsOutOfProcDesigner>False</UseWinFormsOutOfProcDesigner>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CAProxy.AnyGateway.Core, Version=24.2.0.0, Culture=neutral, PublicKeyToken=0ed89d330114ab09, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Keyfactor.AnyGateway.SDK.24.2.0.24.2.0-PRERELEASE-47446\lib\net472\CAProxy.AnyGateway.Core.dll</HintPath>
+    <Reference Include="CAProxy.AnyGateway.Core">
+      <HintPath>$(NuGetPackageRoot)keyfactor.anygateway.sdk\24.2.0-prerelease-47446\lib\net472\CAProxy.AnyGateway.Core.dll</HintPath>
     </Reference>
-    <Reference Include="CAProxy.Interfaces, Version=24.2.0.0, Culture=neutral, PublicKeyToken=0ed89d330114ab09, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Keyfactor.AnyGateway.SDK.24.2.0.24.2.0-PRERELEASE-47446\lib\net472\CAProxy.Interfaces.dll</HintPath>
+    <Reference Include="CAProxy.Interfaces">
+      <HintPath>$(NuGetPackageRoot)keyfactor.anygateway.sdk\24.2.0-prerelease-47446\lib\net472\CAProxy.Interfaces.dll</HintPath>
     </Reference>
-    <Reference Include="CommonCAProxy, Version=24.2.0.0, Culture=neutral, PublicKeyToken=0ed89d330114ab09, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Keyfactor.AnyGateway.SDK.24.2.0.24.2.0-PRERELEASE-47446\lib\net472\CommonCAProxy.dll</HintPath>
+    <Reference Include="CommonCAProxy">
+      <HintPath>$(NuGetPackageRoot)keyfactor.anygateway.sdk\24.2.0-prerelease-47446\lib\net472\CommonCAProxy.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
