@@ -1,28 +1,43 @@
-# Google Cloud CA
+<h1 align="center" style="border-bottom: none">
+    Google Cloud CA
+</h1>
 
-The Google Cloud Gateway enables the following certificate authority management functions via Keyfactor Command: PFX & CSR Enrollment, Revocation, and Synchronization (Full & Incremental)
+<p align="center">
+  <!-- Badges -->
+<img src="https://img.shields.io/badge/integration_status-production-3D1973?style=flat-square" alt="Integration Status: production" />
+<a href="https://github.com/Keyfactor/gcp-cloud-cagateway/releases"><img src="https://img.shields.io/github/v/release/Keyfactor/gcp-cloud-cagateway?style=flat-square" alt="Release" /></a>
+<img src="https://img.shields.io/github/issues/Keyfactor/gcp-cloud-cagateway?style=flat-square" alt="Issues" />
+<img src="https://img.shields.io/github/downloads/Keyfactor/gcp-cloud-cagateway/total?style=flat-square&label=downloads&color=28B905" alt="GitHub Downloads (all assets, all releases)" />
+</p>
 
-#### Integration status: Production - Ready for use in production environments.
+<p align="center">
+  <!-- TOC -->
+  <a href="#support">
+    <b>Support</b>
+  </a> 
+  ·
+  <a href="#license">
+    <b>License</b>
+  </a>
+  ·
+  <a href="https://github.com/orgs/Keyfactor/repositories?q=cagateway">
+    <b>Related Integrations</b>
+  </a>
+</p>
 
-## About the Keyfactor AnyGateway CA Connector
+## Support
+The Google Cloud CA is open source and there is **no SLA**. Keyfactor will address issues as resources become available. Keyfactor customers may request escalation by opening up a support ticket through their Keyfactor representative. 
 
-This repository contains an AnyGateway CA Connector, which is a plugin to the Keyfactor AnyGateway. AnyGateway CA Connectors allow Keyfactor Command to be used for inventory, issuance, and revocation of certificates from a third-party certificate authority.
-
-
-
-
-
-*** 
-
-# Notes
+> To report a problem or suggest a new feature, use the **[Issues](../../issues)** tab. If you want to contribute actual bug fixes or proposed enhancements, use the **[Pull requests](../../pulls)** tab.# Notes
 See the Google website for details on the [Google Certificate Authority Service](https://cloud.google.com/certificate-authority-service)
 
-It should be noted that currently, due to the design of the DevOps tier of CA, Enterprise tier CAs are only supported by the AnyGateway. 
+It should be noted that currently, due to the design of the DevOps tier of CA, Enterprise tier CAs are only supported by the AnyGateway.
 
 # Compatibility
 This AnyGateway is designed to be used with version 21.3.2 of the Keyfactor AnyGateway Framework
 
 # Prerequisites
+
 ## [Authentication](https://cloud.google.com/docs/authentication/production)
 A JSON file generated for a Google Service Account will need to be created and placed on the AnyGateway Server.
 The path of this file into the GOOGLE_APPLICATION_CREDENTIALS environment variable to be used during a CA session.
@@ -63,7 +78,7 @@ In order to enroll for certificates the Keyfactor Command server must trust the 
   ```xml
   <alias alias="CAConnector" type="Keyfactor.AnyGateway.Google.GoogleCAProxy, GoogleCAProxy"/>
   ```
-  * Depending on the version of the AnyCA Gateway installed, additional binding redirects may need to be applied from the app.config. These redirections will be added to the CAProxyServer.config file 
+  * Depending on the version of the AnyCA Gateway installed, additional binding redirects may need to be applied from the app.config. These redirections will be added to the CAProxyServer.config file
 
 # Configuration
 The following sections will breakdown the required configurations for the AnyGatewayConfig.json file that will be imported to configure the Google CA. 
@@ -83,6 +98,7 @@ If the value is over the configured value, the Google CA will set to the maximum
     }
 }
  ```
+
 ## Security
 The security section does not change specifically for the Google CA. Refer to the Keyfactor AnyGateway Documentation for more detail
 ```json
@@ -119,6 +135,7 @@ The security section does not change specifically for the Google CA. Refer to th
         }
     }
 ```
+
 ## CerificateManagers
 The Certificate Managers section is optional.
 	If configured, all users or groups granted OFFICER permissions under the Security section
@@ -144,6 +161,7 @@ The Certificate Managers section is optional.
 		}
 	}
 ```
+
 ## CAConnection
 The CA Connection section will determine which CA in the Google cloud is integrated with Keyfactor. There are 3 required configuration fields
 * ProjectId  
@@ -163,6 +181,7 @@ This is the resource id of the CA Pool created using the [Google Cloud Console](
     "CAPoolId":"gcp-test-pool"
 }
 ```
+
 ## GatewayRegistration
 There are no Google Specific Changes for the GatewayRegistration section. Refer to the Keyfactor AnyGateway Documentation for more detail on required changed to support the AnyCA Gateway
 ```json
@@ -186,3 +205,12 @@ There are no Google Specific Changes for the GatewayRegistration section. Refer 
   }
 ```
 
+
+
+## License
+
+Apache License 2.0, see [LICENSE](LICENSE).
+
+## Related Integrations
+
+See all [Keyfactor CA Gateways](https://github.com/orgs/Keyfactor/repositories?q=cagateway).
