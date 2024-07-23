@@ -6,5 +6,6 @@
     "description": "The Google Cloud Gateway enables the following certificate authority management functions via Keyfactor Command: PFX & CSR Enrollment, Revocation, and Synchronization (Full & Incremental)",
     "link_github": true,
     "update_catalog": true,
-    "support_level": "kf-community"
+    "support_level": "kf-community",
+    "release_dir": "src\\GoogleCAProxy\\bin\\Release"
 }
