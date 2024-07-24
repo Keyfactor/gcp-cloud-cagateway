@@ -1,9 +1,9 @@
 {
     "$schema": "https://keyfactor.github.io/v2/integration-manifest-schema.json",
     "integration_type": "ca-gateway",
-    "name": "Google Cloud CA",
+    "name": "GCP CAS AnyCA Gateway DCOM plugin",
     "status": "production",
-    "description": "The Google Cloud Gateway enables the following certificate authority management functions via Keyfactor Command: PFX & CSR Enrollment, Revocation, and Synchronization (Full & Incremental)",
+    "description": "AnyCA Gateway DCOM plugin that extends Google Cloud Platform Certificate Authority Service to Keyfactor Command",
     "link_github": true,
     "update_catalog": true,
     "support_level": "kf-community",
