@@ -1,5 +1,5 @@
 <h1 align="center" style="border-bottom: none">
-    Google Cloud CA
+    GCP CAS AnyCA Gateway DCOM plugin
 </h1>
 
 <p align="center">
@@ -26,7 +26,7 @@
 </p>
 
 ## Support
-The Google Cloud CA is open source and there is **no SLA**. Keyfactor will address issues as resources become available. Keyfactor customers may request escalation by opening up a support ticket through their Keyfactor representative. 
+The GCP CAS AnyCA Gateway DCOM plugin is open source and there is **no SLA**. Keyfactor will address issues as resources become available. Keyfactor customers may request escalation by opening up a support ticket through their Keyfactor representative. 
 
 > To report a problem or suggest a new feature, use the **[Issues](../../issues)** tab. If you want to contribute actual bug fixes or proposed enhancements, use the **[Pull requests](../../pulls)** tab.
 
