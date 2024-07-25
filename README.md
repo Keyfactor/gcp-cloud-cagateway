@@ -1,170 +1,235 @@
-# Google Cloud CA
+<h1 align="center" style="border-bottom: none">
+    GCP CAS AnyCA Gateway DCOM plugin
+</h1>
 
-The Google Cloud Gateway enables the following certificate authority management functions via Keyfactor Command: PFX & CSR Enrollment, Revocation, and Synchronization (Full & Incremental)
+<p align="center">
+  <!-- Badges -->
+<img src="https://img.shields.io/badge/integration_status-production-3D1973?style=flat-square" alt="Integration Status: production" />
+<a href="https://github.com/Keyfactor/gcp-cloud-cagateway/releases"><img src="https://img.shields.io/github/v/release/Keyfactor/gcp-cloud-cagateway?style=flat-square" alt="Release" /></a>
+<img src="https://img.shields.io/github/issues/Keyfactor/gcp-cloud-cagateway?style=flat-square" alt="Issues" />
+<img src="https://img.shields.io/github/downloads/Keyfactor/gcp-cloud-cagateway/total?style=flat-square&label=downloads&color=28B905" alt="GitHub Downloads (all assets, all releases)" />
+</p>
 
-#### Integration status: Production - Ready for use in production environments.
+<p align="center">
+  <!-- TOC -->
+  <a href="#support">
+    <b>Support</b>
+  </a> 
+  ·
+  <a href="#license">
+    <b>License</b>
+  </a>
+  ·
+  <a href="https://github.com/topics/keyfactor-integration">
+    <b>Related Integrations</b>
+  </a>
+</p>
 
-## About the Keyfactor AnyGateway CA Connector
+## Support
+The GCP CAS AnyCA Gateway DCOM plugin is open source and there is **no SLA**. Keyfactor will address issues as resources become available. Keyfactor customers may request escalation by opening up a support ticket through their Keyfactor representative. 
 
-This repository contains an AnyGateway CA Connector, which is a plugin to the Keyfactor AnyGateway. AnyGateway CA Connectors allow Keyfactor Command to be used for inventory, issuance, and revocation of certificates from a third-party certificate authority.
-
-
-
+> To report a problem or suggest a new feature, use the **[Issues](../../issues)** tab. If you want to contribute actual bug fixes or proposed enhancements, use the **[Pull requests](../../pulls)** tab.
 
 
-*** 
+## Overview
 
-# Notes
-See the Google website for details on the [Google Certificate Authority Service](https://cloud.google.com/certificate-authority-service)
+The [Google Cloud Platform (GCP) CA Services (CAS)](https://cloud.google.com/security/products/certificate-authority-service) AnyCA Gateway DCOM plugin extends the capabilities of connected GCP CAS CAs to [Keyfactor Command](https://www.keyfactor.com/products/command/) via the Keyfactor AnyCA Gateway DCOM. The plugin represents a fully featured AnyCA DCOM Plugin with the following capabilies:
 
-It should be noted that currently, due to the design of the DevOps tier of CA, Enterprise tier CAs are only supported by the AnyGateway. 
+* CA Sync:
+    * Download all certificates issued by connected Enterprise tier CAs in GCP CAS (full sync).
+    * Download all certificates issued by connected Enterprise tier CAs in GCP CAS issued after a specified time (incremental sync).
+* Certificate enrollment for all published GoDaddy Certificate SKUs:
+    * Support certificate enrollment (new keys/certificate).
+* Certificate revocation:
+    * Request revocation of a previously issued certificate.
 
-# Compatibility
-This AnyGateway is designed to be used with version 21.3.2 of the Keyfactor AnyGateway Framework
+> The GCP CAS AnyCA Gateway DCOM plugin is **not** supported for [DevOps Tier](https://cloud.google.com/certificate-authority-service/docs/tiers) Certificate Authority Pools.
+> 
+> DevOps tier CA Pools don't offer listing, describing, or revoking certificates.
 
-# Prerequisites
-## [Authentication](https://cloud.google.com/docs/authentication/production)
-A JSON file generated for a Google Service Account will need to be created and placed on the AnyGateway Server.
-The path of this file into the GOOGLE_APPLICATION_CREDENTIALS environment variable to be used during a CA session.
-Since the AnyGateway is required to run as the Network Service account, the registry will need to be modified to provide the service access to the Environment variable above.
-The GOOGLE_APPLICATION_CREDENTIALS variable should be placed in the following registry location and read access provided:
+## Compatibility
 
-* HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\Environment
+This AnyGateway is designed to be used with version 24.2 of the Keyfactor AnyCA Gateway DCOM Framework.
 
-## [Authorization](https://cloud.google.com/certificate-authority-service/docs/reference/permissions-and-roles)
-Currently the only method supported for authentication is a Service Credential with the following IAM authorizations. Any built in role with the below authorizations will function as well. 
-* privateca.caPools.list
-* privateca.caPools.get
-* privateca.certificateTemplates.list
-* privateca.certificateTemplates.get
-* privateca.certificateTemplates.use
-* privateca.certificateAuthorities.list
-* privateca.certificateAuthorities.get
-* privateca.certificates.create
-* privateca.certificates.get
-* privateca.certificates.list
-* privateca.certificates.update
-* privateca.reusableConfigs.get
-* privateca.reusableConfigs.list
-* resourcemanager.projects.get
+## Requirements
 
-## Certificate Chain
-In order to enroll for certificates the Keyfactor Command server must trust the Private CA chain.  Once you create your Root and/or Subordinate CA, make sure to import the certificate chain into the Command Server certificate store
+### Application Default Credentials
 
-# Install
-* Install the AnyCA Gateway Framework using the MSI from the Software Download Portal
+The GCP CAS AnyCA Gateway DCOM plugin connects to and authenticates with GCP CAS implicitly using [Application Default Credentials](https://cloud.google.com/docs/authentication/application-default-credentials). This means that all authentication-related configuration of the GCP CAS AnyCA Gateway REST plugin is implied by the environment where the AnyCA Gateway REST itself is running.
 
-* Download latest successful build from [GitHub](https://github.com/Keyfactor/google-cloud-cagateway)
+Please refer to [Google's documentation](https://cloud.google.com/docs/authentication/provide-credentials-adc) to configure ADC on the server running the AnyCA Gateway REST.
 
-* Copy *.dll to the Program Files\Keyfactor\ Keyfactor AnyGateway directory
+> The easiest way to configure ADC for non-production environments is to use [User Credentials](https://cloud.google.com/docs/authentication/provide-credentials-adc#local-dev).
+>
+> For production environments that use an ADC method requiring the `GOOGLE_APPLICATION_CREDENTIALS` environment variable, you must ensure the following:
+>
+> 1. The service account that the AnyCA Gateway REST runs under must have read permission to the GCP credential JSON file.
+> 2. You must set the `GOOGLE_APPLICATION_CREDENTIALS` environment variable for the Windows Service running the AnyCA Gateway REST using the [Windows registry editor](https://learn.microsoft.com/en-us/troubleshoot/windows-server/performance/windows-registry-advanced-users).
+>     * Refer to the [HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\Environment](https://learn.microsoft.com/en-us/windows/win32/procthread/environment-variables) docs.
 
-* Update the CAProxyServer.config file
-  * Update the CAConnection section to point at the GoogleCAProxy class
-  ```xml
-  <alias alias="CAConnector" type="Keyfactor.AnyGateway.Google.GoogleCAProxy, GoogleCAProxy"/>
-  ```
-  * Depending on the version of the AnyCA Gateway installed, additional binding redirects may need to be applied from the app.config. These redirections will be added to the CAProxyServer.config file 
+If the selected ADC mechanism is [Service Account Key](https://cloud.google.com/docs/authentication/provide-credentials-adc#wlif-key), it's recommended that a [custom role is created](https://cloud.google.com/iam/docs/creating-custom-roles) that has the following minimum permissions:
 
-# Configuration
+* `privateca.certificateTemplates.list`
+* `privateca.certificateTemplates.use`
+* `privateca.certificateAuthorities.get`
+* `privateca.certificates.create`
+* `privateca.certificates.get`
+* `privateca.certificates.list`
+* `privateca.certificates.update`
+* `privateca.caPools.get`
+
+> The built-in CA Service Operation Manager `roles/privateca.caManager` role can also be used, but is more permissive than a custom role with the above permissions.
+
+### Root CA Configuration
+
+Both the Keyfactor Command and AnyCA Gateway DCOM servers must trust the root CA, and if applicable, any subordinate CAs for all features to work as intended. Download the CA Certificate (and chain, if applicable) from GCP [CAS](https://console.cloud.google.com/security/cas), and import them into the appropriate certificate store on the AnyCA Gateway DCOM server.
+
+* **Windows** - The root CA and applicable subordinate CAs must be imported into the Windows certificate store. The certificates can be imported using the Microsoft Management Console (MMC) or PowerShell. 
+    * Certificates can be imported in MMC by "File" -> "Add/Remove Snap-in" -> "Certificates" -> "Add >" -> "Computer account" -> "Local computer".
+    * Root CAs must go in the `Trusted Root Certification Authorities` certificate store.
+    * Subordinate CAs must go in the `Intermediate Certification Authorities` certificate store.
+
+> If the Root CA and chain are not known by the server hosting the AnyCA Gateway DCOM, the certificate chain _may not_ be returned to Command in certificate enrollment requests.
+
+### Template Identification
+
+The GCP CAS AnyCA Gateway DCOM plugin supports [GCP CAS Certificate Templates](https://cloud.google.com/certificate-authority-service/docs/policy-controls). Certificate Templates exist at the Project level in GCP. Before installing the plugin, identify the [Certificate Templates](https://console.cloud.google.com/security/cas) that you want to make available to Keyfactor Command and [create Certificate Templates in AD](https://software.keyfactor.com/Guides/AnyGateway_Generic/Content/AnyGateway/Preparing_Templates.htm).
+
+> Certificate Templates in GCP are not required. The plugin will not specify a template for the [CreateCertificate RPC](https://cloud.google.com/certificate-authority-service/docs/reference/rpc/google.cloud.security.privateca.v1#google.cloud.security.privateca.v1.CertificateAuthorityService.CreateCertificate) if the `ProductId` (discussed later) is set to `Default`.
+
+## Installation
+
+1. Install AnyCA Gateway DCOM v24.2 per the [official Keyfactor documentation](https://software.keyfactor.com/Guides/AnyGateway_Generic/Content/AnyGateway/Introduction.htm).
+
+2. Download the [latest GCP CAS AnyCA Gateway DCOM plugin assemblies](https://github.com/Keyfactor/gcp-cloud-cagateway/releases/latest).
+
+3. Copy `*.dll` to the `C:\Program Files\Keyfactor\Keyfactor AnyGateway` directory.
+
+4. Update the `CAProxyServer.config` file.
+    1. Update the `$.configuration.unity.CAConnector` section to point at the `GoogleCAProxy` class.
+
+        ```xml
+        <alias alias="CAConnector" type="Keyfactor.AnyGateway.Google.GoogleCAProxy, GoogleCAProxy"/>
+        ```
+
+    2. Modify the `Newtonsoft.Json` `bindingRedirect` to redirect versions from `0.0.0.0-13.0.0.0` to `12.0.0.0`.
+
+        ```xml
+        <dependentAssembly>
+            <assemblyIdentity name="Newtonsoft.Json" publicKeyToken="30AD4FE6B2A6AEED" culture="neutral" />
+            <bindingRedirect oldVersion="0.0.0.0-13.0.0.0" newVersion="12.0.0.0" />
+        </dependentAssembly>
+        ```
+
+    3. Add a `bindingRedirect` for `Google.Apis.Auth` to redirect versions from `0.0.0.0-1.67.0.0` to `1.67.0.0`.
+
+        ```xml
+        <dependentAssembly>
+            <assemblyIdentity name="Google.Apis.Auth" publicKeyToken="4b01fa6e34db77ab" culture="neutral" />
+            <bindingRedirect oldVersion="0.0.0.0-1.67.0.0" newVersion="1.67.0.0" />
+        </dependentAssembly>
+        ```
+
+    4. Add a `bindingRedirect` for `System.Memory` to redirect versions from `0.0.0.0-4.0.1.2` to `4.0.1.1`.
+
+        ```xml
+        <dependentAssembly>
+            <assemblyIdentity name="System.Memory" culture="neutral" publicKeyToken="cc7b13ffcd2ddd51" />
+            <bindingRedirect oldVersion="0.0.0.0-4.0.1.2" newVersion="4.0.1.1" />
+        </dependentAssembly>
+        ```
+
+    > Depending on additional environment-specific factors, additional binding redirects may need to be applied to `CAProxyServer.config`.
+
+## Configuration
 The following sections will breakdown the required configurations for the AnyGatewayConfig.json file that will be imported to configure the Google CA. 
 
-## Templates
-The Google CA has introduced the concept of Templates for the V1 release.
-The product ID mapped below must be the Template Name from the cloud console.
-The API does not provide certificate lifetime information, but any value can be placed here.
-If the value is over the configured value, the Google CA will set to the maximum value as determined by the template configuration. 
- ```json
-   "Templates": {
-    "GoogleCAWebServer": {
-      "ProductID": "", /*Value not used, so set to empty string. 'ProductID' element must be present.*/
-      "Parameters": {
-        "Lifetime": "300",/*days*/
-      }
+### Templates
+
+As discussed in the [Template Identification](#template-identification), the GCP CAS AnyCA Gateway DCOM plugin supports [GCP CAS Certificate Templates](https://cloud.google.com/certificate-authority-service/docs/policy-controls). The Keyfactor AnyCA Gateway DCOM maps [AD Certificate Templates](https://learn.microsoft.com/en-us/windows-server/identity/ad-cs/certificate-template-concepts) to GCP Certificate Templates via the `ProductID` property in the `Templates` section of configuration files. 
+
+_At least one_ Certificate Template must be defined in this section with the `ProductID` set to `Default`. This Product ID corresponds to no Certificate Template for the [CreateCertificate RPC](https://cloud.google.com/certificate-authority-service/docs/reference/rpc/google.cloud.security.privateca.v1#google.cloud.security.privateca.v1.CertificateAuthorityService.CreateCertificate).
+
+Subsequent Certificate Templates should set the `ProductID` to the Certificate Template ID in GCP CAS.
+
+```json
+"Templates": {
+    "GCPCASDefault": {
+        "ProductID": "Default",
+            "Parameters": {
+                "Lifetime": "300", /* Certificate validity in days */
+            }
     }
 }
- ```
+```
+
+> The `Lifetime` key should be added as a Custom Enrollment Parameter/Field for each Certificate Template in Keyfactor Command per the [official Keyfactor documentation](https://software.keyfactor.com/Core-OnPrem/Current/Content/ReferenceGuide/Configuring%20Template%20Options.htm).
+
 ## Security
-The security section does not change specifically for the Google CA. Refer to the Keyfactor AnyGateway Documentation for more detail
+
+Refer to the [official Keyfactor documentation](https://software.keyfactor.com/Guides/AnyGateway_Generic/Content/AnyGateway/cmdlets.htm) to configure the `Security` section. The following is provided as an example.
+
 ```json
-  /*Grant permissions on the CA to users or groups in the local domain.
-	READ: Enumerate and read contents of certificates.
-	ENROLL: Request certificates from the CA.
-	OFFICER: Perform certificate functions such as issuance and revocation. This is equivalent to "Issue and Manage" permission on the Microsoft CA.
-	ADMINISTRATOR: Configure/reconfigure the gateway.
-	Valid permission settings are "Allow", "None", and "Deny".*/
-    "Security": {
-        "Keyfactor\\Administrator": {
-            "READ": "Allow",
+/* Grant permissions on the CA to users or groups in the local domain.
+   READ: Enumerate and read contents of certificates.
+   ENROLL: Request certificates from the CA.
+   OFFICER: Perform certificate functions such as issuance and revocation. This is equivalent to "Issue and Manage" permission on the Microsoft CA.
+   ADMINISTRATOR: Configure/reconfigure the gateway.
+  
+  Valid permission settings are "Allow", "None", and "Deny".
+*/
+"Security": {
+    "Keyfactor\\Administrator": {
+        "READ": "Allow",
             "ENROLL": "Allow",
             "OFFICER": "Allow",
             "ADMINISTRATOR": "Allow"
-        },
-        "Keyfactor\\gateway_test": {
-            "READ": "Allow",
-            "ENROLL": "Allow",
-            "OFFICER": "Allow",
-            "ADMINISTRATOR": "Allow"
-        },		
-        "Keyfactor\\SVC_TimerService": {
-            "READ": "Allow",
-            "ENROLL": "Allow",
-            "OFFICER": "Allow",
-            "ADMINISTRATOR": "None"
-        },
-        "Keyfactor\\SVC_AppPool": {
-            "READ": "Allow",
-            "ENROLL": "Allow",
-            "OFFICER": "Allow",
-            "ADMINISTRATOR": "Allow"
-        }
+    },
+    "Keyfactor\\gateway_test": {
+        "READ": "Allow",
+        "ENROLL": "Allow",
+        "OFFICER": "Allow",
+        "ADMINISTRATOR": "Allow"
+    },		
+    "Keyfactor\\SVC_TimerService": {
+        "READ": "Allow",
+        "ENROLL": "Allow",
+        "OFFICER": "Allow",
+        "ADMINISTRATOR": "None"
+    },
+    "Keyfactor\\SVC_AppPool": {
+        "READ": "Allow",
+        "ENROLL": "Allow",
+        "OFFICER": "Allow",
+        "ADMINISTRATOR": "Allow"
     }
+}
 ```
-## CerificateManagers
-The Certificate Managers section is optional.
-	If configured, all users or groups granted OFFICER permissions under the Security section
-	must be configured for at least one Template and one Requester. 
-	Uses "<All>" to specify all templates. Uses "Everyone" to specify all requesters.
-	Valid permission values are "Allow" and "Deny".
-```json
-  "CertificateManagers":{
-		"DOMAIN\\Username":{
-			"Templates":{
-				"MyTemplateShortName":{
-					"Requesters":{
-						"Everyone":"Allow",
-						"DOMAIN\\Groupname":"Deny"
-					}
-				},
-				"<All>":{
-					"Requesters":{
-						"Everyone":"Allow"
-					}
-				}
-			}
-		}
-	}
-```
+
 ## CAConnection
-The CA Connection section will determine which CA in the Google cloud is integrated with Keyfactor. There are 3 required configuration fields
-* ProjectId  
-This is the Resource ID of the project that contains the Google CA Service
-* LocationId  
-This is the resource ID of the geographical location (i.e. us-east1) within the Google Cloud
-* CAId  
-This is the resource Id of any one of the CAs created in the CA pool using the [Google Cloud Console](https://console.cloud.google.com)
-* CAPoolId
-This is the resource id of the CA Pool created using the [Google Cloud Console](https://console.cloud.google.com)
+
+The `CAConnection` section selects the GCP Project/CA Pool/CA whose certificate operations will be extended to Keyfactor. There are three required fields.
+
+* `ProjectId` - The Resource ID of the project that contains the Google CA Service.
+* `LocationId` - The GCP location ID where the project containing the target GCP CAS CA is located. For example, 'us-central1'.
+* `CAPoolId` - The CA Pool ID in GCP CAS to use for certificate operations. If the CA Pool has resource name `projects/my-project/locations/us-central1/caPools/my-pool`, this field should be set to `my-pool`.
+* `CAId` (optional) - The CA ID of a CA in the same CA Pool as CAPool. For example, to issue certificates from a CA with resource name `projects/my-project/locations/us-central1/caPools/my-pool/certificateAuthorities/my-ca`, this field should be set to `my-ca`.
 
 ```json
 "CAConnection": {
-    "ProjectId": "concise-frame-296019",
     "LocationId": "us-east1",
-    "CAId":"ca-enterprise-subordinate-sandbox-tls",
-    "CAPoolId":"gcp-test-pool"
+    "ProjectId": "concise-frame-296019",
+    "CAPoolId":"gcp-test-pool",
+    "CAId":"ca-enterprise-subordinate-sandbox-tls"
 }
 ```
+
+> If `CAId` is not specified, CA selection will defer to GCP CAS - a CA in the CA Pool identified by `CAPoolId` will be selected automatically.
+
 ## GatewayRegistration
+
 There are no Google Specific Changes for the GatewayRegistration section. Refer to the Keyfactor AnyGateway Documentation for more detail on required changed to support the AnyCA Gateway
+
 ```json
   "GatewayRegistration": {
     "LogicalName": "GoogleCASandbox",
@@ -177,7 +242,9 @@ There are no Google Specific Changes for the GatewayRegistration section. Refer 
 ```
 
 ## ServiceSettings
+
 There are no Google Specific Changes for the GatewayRegistration section. Refer to the Keyfactor AnyGateway Documentation for more detail on required changed to support the AnyCA Gateway
+
 ```json
   "ServiceSettings": {
     "ViewIdleMinutes": 8,
@@ -186,3 +253,12 @@ There are no Google Specific Changes for the GatewayRegistration section. Refer 
   }
 ```
 
+
+
+## License
+
+Apache License 2.0, see [LICENSE](LICENSE).
+
+## Related Integrations
+
+See all [Keyfactor integrations](https://github.com/topics/keyfactor-integration).

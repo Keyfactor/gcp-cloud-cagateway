@@ -1,54 +1,61 @@
-﻿using CAProxy.AnyGateway;
+﻿using System;
+using System.Collections;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security;
+using System.Threading;
+using CAProxy.AnyGateway;
 using CAProxy.AnyGateway.Interfaces;
 using CAProxy.AnyGateway.Models;
 using CAProxy.Common;
 using CSS.PKI;
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-//TODO Update for V1
+using Google.Api.Gax;
 using Google.Cloud.Security.PrivateCA.V1;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
-using Google.Api.Gax;
-using CSS.Common.Logging;
-
+using Keyfactor.Logging;
+using Microsoft.Extensions.Logging;
 
 namespace Keyfactor.AnyGateway.Google
 {
     public class GoogleCAProxy : BaseCAConnector
     {
-        const string AUTH_ENV_VARIABLE_NAME = "GOOGLE_APPLICATION_CREDENTIALS";
-        const string PROJECT_ID_KEY = "ProjectId";
-        const string LOCATION_ID_KEY = "LocationId";
-        const string CA_ID_KEY = "CAId";
-        const string CA_POOL_ID_KEY = "CAPoolId";
-        const string LIFETIME_KEY = "Lifetime";
+        private const string AuthEnvVariableName = "GOOGLE_APPLICATION_CREDENTIALS";
+        private const string ProjectIdKey = "ProjectId";
+        private const string LocationIdKey = "LocationId";
+        private const string CaIdKey = "CAId";
+        private const string CaPoolIdKey = "CAPoolId";
+        private const string LifetimeKey = "Lifetime";
+        private const string NoTemplateProductId = "Default";
+
+        private static readonly ILogger Log = LogHandler.GetClassLogger<GoogleCAProxy>();
 
         private CertificateAuthorityServiceClient GcpClient { get; set; }
         private ICAConnectorConfigProvider Config { get; set; }
 
         /// <summary>
-        /// Project Location ID from the Google Cloud Console for the Private CA Project
+        ///     Project Location ID from the Google Cloud Console for the Private CA Project
         /// </summary>
         private string ProjectId { get; set; }
-        /// <summary>
-        /// Location ID (i.e. us-east1) from the Google Cloud Console for the Private CA deployment
-        /// </summary>
-        private string LocationId { get; set; }
-        /// <summary>
-        /// CA Resource ID from the Google Cloud Console for the Private CA to be monitored. To be marked obsolete at GA
-        /// </summary>
-        private string CAId { get; set; }
-        /// <summary>
-        /// CA Pool Resource ID from the Google Cloud Console.  This will only be used in the V1 release
-        /// </summary>
-        private string CAPoolId { get; set; }
 
         /// <summary>
-        /// AnyGateway method to enroll for a certificate from Google CA
+        ///     Location ID (i.e. us-east1) from the Google Cloud Console for the Private CA deployment
+        /// </summary>
+        private string LocationId { get; set; }
+
+        /// <summary>
+        ///     CA Resource ID from the Google Cloud Console for the Private CA to be monitored. To be marked obsolete at GA
+        /// </summary>
+        private string CaId { get; set; }
+
+        /// <summary>
+        ///     CA Pool Resource ID from the Google Cloud Console.  This will only be used in the V1 release
+        /// </summary>
+        private string CaPoolId { get; set; }
+
+        /// <summary>
+        ///     AnyGateway method to enroll for a certificate from Google CA
         /// </summary>
         /// <param name="certificateDataReader">Database access to existing CA Certificates</param>
         /// <param name="csr">base64 encoded string of the Certificate Request</param>
@@ -58,91 +65,140 @@ namespace Keyfactor.AnyGateway.Google
         /// <param name="requestFormat"></param>
         /// <param name="enrollmentType"></param>
         /// <returns></returns>
-        public override EnrollmentResult Enroll(ICertificateDataReader certificateDataReader, 
-                                                string csr, 
-                                                string subject, 
-                                                Dictionary<string, string[]> san, 
-                                                EnrollmentProductInfo productInfo, 
-                                                PKIConstants.X509.RequestFormat requestFormat, 
-                                                RequestUtilities.EnrollmentType enrollmentType)
+        public override EnrollmentResult Enroll(ICertificateDataReader certificateDataReader,
+            string csr,
+            string subject,
+            Dictionary<string, string[]> san,
+            EnrollmentProductInfo productInfo,
+            PKIConstants.X509.RequestFormat requestFormat,
+            RequestUtilities.EnrollmentType enrollmentType)
         {
-            Logger.MethodEntry(ILogExtensions.MethodLogLevel.Debug);
+            Log.MethodEntry();
+
             try
             {
-
                 GcpClient = BuildClient();
-                
-                //var template = GcpClient.GetCertificateTemplate(productInfo.ProductID);
-                
-                //Logger.Trace($"Template {template.Name} found for enrollment");              
-              
-                var caPoolAsTypedName = CaPoolName.FromProjectLocationCaPool(ProjectId, LocationId, CAPoolId);
+            }
+            catch
+            {
+                Log.LogError("Failed to create GCP CAS client");
+                throw;
+            }
 
-                Logger.Trace($"Enroll at CA Pool: {caPoolAsTypedName}");              
-
-                if (!int.TryParse(productInfo.ProductParameters[LIFETIME_KEY], out int lifetimeInDays))
+            int lifetimeInDays = 365; // Default value
+            if (productInfo.ProductParameters.TryGetValue(LifetimeKey, out string lifetimeInDaysString))
+            {
+                if (!int.TryParse(lifetimeInDaysString, out lifetimeInDays))
                 {
-                    Logger.Warn($"Unable to parse certificate {LIFETIME_KEY} from Product Parameters for Product Id {productInfo.ProductID}. Set Lifetime to 365 days.");
-                    lifetimeInDays = 365;
+                    Log.LogWarning(
+                        $"Unable to parse certificate {LifetimeKey} from Product Parameters for Product Id {productInfo.ProductID}. Using default value of 365 days.");
                 }
-                Logger.Trace($"Submit Certificate Request for {subject} with {lifetimeInDays} days validity");
-                var certificate = new Certificate()
-                {
-                    PemCsr = $"-----BEGIN NEW CERTIFICATE REQUEST-----\n{pemify(csr)}\n-----END NEW CERTIFICATE REQUEST-----",
-                    Lifetime = Duration.FromTimeSpan(new TimeSpan(lifetimeInDays, 0, 0, 0, 0))//365 day default or defined by config
-                };
+            }
+            else
+            {
+                Log.LogDebug(
+                    $"LifetimeKey not found in Product Parameters for Product Id {productInfo.ProductID}. Using default value of 365 days.");
+            }
 
-                DateTime now = DateTime.Now;
-                var createCertificateRequest = new CreateCertificateRequest() { 
-                    ParentAsCaPoolName = caPoolAsTypedName,
-                    Certificate = certificate,
-                    //RequestId="",//if used, this needs to be durable between reties 
-                    CertificateId = $"{now:yyyy}{now:MM}{now:dd}-{now:HH}{now:mm}{now:ss}"//ID is required for Enterprise tier CAs and ignored for other.  
-                };
+            Log.LogDebug($"Configuring {typeof(Certificate)} for {subject} with {lifetimeInDays} days validity");
+            Certificate certificate = new Certificate
+            {
+                PemCsr =
+                    $"-----BEGIN NEW CERTIFICATE REQUEST-----\n{pemify(csr)}\n-----END NEW CERTIFICATE REQUEST-----",
+                Lifetime = Duration.FromTimeSpan(new TimeSpan(lifetimeInDays, 0, 0, 0,
+                    0)) //365 day default or defined by config
+            };
 
-                var response = GcpClient.CreateCertificate(createCertificateRequest);
+            if (productInfo.ProductID == NoTemplateProductId)
+            {
+                Log.LogDebug(
+                    $"{NoTemplateProductId} template selected - Certificate enrollment will defer to the baseline values and policy configured by the CA Pool.");
+            }
+            else
+            {
+                Log.LogDebug(
+                    $"Configuring {typeof(Certificate)} with the {productInfo.ProductID} Certificate Template.");
+                CertificateTemplateName template = new CertificateTemplateName(ProjectId, LocationId, productInfo.ProductID);
+                certificate.CertificateTemplate = template.ToString();
+            }
 
-                return new EnrollmentResult
-                {
-                    Status = 20,
-                    CARequestID = response.CertificateName?.CertificateId,
-                    Certificate = response.PemCertificate
-                };
+            DateTime now = DateTime.Now;
+            CaPoolName caPoolAsTypedName = CaPoolName.FromProjectLocationCaPool(ProjectId, LocationId, CaPoolId);
+            Log.LogDebug(
+                $"Configuring {typeof(CreateCertificateRequest)} with the configured {typeof(Certificate)} to enroll {subject} with the {caPoolAsTypedName} CA Pool");
+            CreateCertificateRequest createCertificateRequest = new CreateCertificateRequest
+            {
+                ParentAsCaPoolName = caPoolAsTypedName,
+                Certificate = certificate,
+                //RequestId="",//if used, this needs to be durable between reties 
+                CertificateId =
+                    $"{now:yyyy}{now:MM}{now:dd}-{now:HH}{now:mm}{now:ss}" //ID is required for Enterprise tier CAs and ignored for other.  
+            };
+
+            if (!string.IsNullOrEmpty(CaId))
+            {
+                Log.LogDebug(
+                    $"CAConnection section contained a non-empty CAId - Certificate will be enrolled using the CA with ID {CaId}");
+                createCertificateRequest.IssuingCertificateAuthorityId = CaId;
+            }
+
+            Certificate response;
+            try
+            {
+                Log.LogDebug($"Submitting CreateCertificate RPC for {subject}");
+                response = GcpClient.CreateCertificate(createCertificateRequest);
+                Log.LogDebug($"RPC was successful - minted certificate with resource name {response.Name}");
             }
             catch (RpcException gEx)
             {
+                string message =
+                    $"Could not complete certificate enrollment. RPC was unsuccessful. Status Code: {gEx.StatusCode} | Detail: {gEx.Status.Detail}";
+                Log.LogError(message);
                 return new EnrollmentResult
                 {
                     Status = 30,
-                    StatusMessage = $"Could not complete certificate enrollment. Status Code: {gEx.StatusCode} | Detail: {gEx.Status.Detail}"
+                    StatusMessage = message
                 };
             }
             catch (Exception ex)
             {
-                return new EnrollmentResult { 
-                    Status=30,
-                    StatusMessage = $"Could not complete certificate enrollment. {ex.Message}"
+                string message = $"Exception caught - Could not complete certificate enrollment: {ex}";
+                Log.LogError(message);
+                return new EnrollmentResult
+                {
+                    Status = 30,
+                    StatusMessage = message
                 };
             }
+
+            return new EnrollmentResult
+            {
+                Status = 20,
+                CARequestID = response.CertificateName?.CertificateId,
+                Certificate = response.PemCertificate
+            };
         }
+
         /// <summary>
-        /// AnyGateway method to get a single certificate's detail from the CA
+        ///     AnyGateway method to get a single certificate's detail from the CA
         /// </summary>
         /// <param name="caRequestID">CA Id returned during inital synchronization</param>
         /// <returns></returns>
         public override CAConnectorCertificate GetSingleRecord(string caRequestID)
         {
-            Logger.MethodEntry(ILogExtensions.MethodLogLevel.Debug);
+            Log.MethodEntry();
             try
             {
                 GcpClient = BuildClient();
-                var cloudCert = GcpClient.GetCertificate(new CertificateName(ProjectId, LocationId, CAPoolId, caRequestID));
+                Certificate cloudCert =
+                    GcpClient.GetCertificate(new CertificateName(ProjectId, LocationId, CaPoolId, caRequestID));
 
                 return ProcessCAResponse(cloudCert);
             }
             catch (RpcException gEx)
             {
-                throw new Exception($"Could not retrieve certificate. Status Code: {gEx.StatusCode} | Detail: {gEx.Status.Detail}");
+                throw new Exception(
+                    $"Could not retrieve certificate. Status Code: {gEx.StatusCode} | Detail: {gEx.Status.Detail}");
             }
             catch (Exception ex)
             {
@@ -151,38 +207,37 @@ namespace Keyfactor.AnyGateway.Google
         }
 
         /// <summary>
-        /// AnyGateway method called before most AnyGateway functions
+        ///     AnyGateway method called before most AnyGateway functions
         /// </summary>
         /// <param name="configProvider">Existing configuration extracted from the AnyGateway database</param>
         public override void Initialize(ICAConnectorConfigProvider configProvider)
         {
-            Logger.MethodEntry(ILogExtensions.MethodLogLevel.Debug);
+            Log.MethodEntry();
             try
             {
                 Config = configProvider;
-                ProjectId = Config.CAConnectionData[PROJECT_ID_KEY] as string;
-                LocationId = Config.CAConnectionData[LOCATION_ID_KEY] as string;
-                CAPoolId = Config.CAConnectionData[CA_POOL_ID_KEY] as string;
-                CAId = Config.CAConnectionData[CA_ID_KEY] as string;
+                ProjectId = Config.CAConnectionData[ProjectIdKey] as string;
+                LocationId = Config.CAConnectionData[LocationIdKey] as string;
+                CaPoolId = Config.CAConnectionData[CaPoolIdKey] as string;
+                CaId = Config.CAConnectionData[CaIdKey] as string;
             }
             catch (Exception ex)
             {
-                Logger.Error(ex);
+                Log.LogError($"Failed to initialize GCP CAS CAPlugin: {ex}");
             }
         }
 
         /// <summary>
-        /// Certutil response to the certutil -ping [-config host\logical] command
+        ///     Certutil response to the certutil -ping [-config host\logical] command
         /// </summary>
         public override void Ping()
         {
-            Logger.MethodEntry(ILogExtensions.MethodLogLevel.Debug);
-            Logger.MethodExit(ILogExtensions.MethodLogLevel.Debug);
-
+            Log.MethodEntry();
+            Log.MethodExit();
         }
 
         /// <summary>
-        /// AnyGateway method to revoke a certificate
+        ///     AnyGateway method to revoke a certificate
         /// </summary>
         /// <param name="caRequestID"></param>
         /// <param name="hexSerialNumber"></param>
@@ -190,142 +245,148 @@ namespace Keyfactor.AnyGateway.Google
         /// <returns></returns>
         public override int Revoke(string caRequestID, string hexSerialNumber, uint revocationReason)
         {
-            Logger.MethodEntry(ILogExtensions.MethodLogLevel.Debug);
+            Log.MethodEntry();
             try
             {
                 GcpClient = BuildClient();
-                CertificateName certId = new CertificateName(ProjectId, LocationId, CAPoolId, caRequestID);
+                CertificateName certId = new CertificateName(ProjectId, LocationId, CaPoolId, caRequestID);
 
-                RevokeCertificateRequest request = new RevokeCertificateRequest()
-                { 
+                RevokeCertificateRequest request = new RevokeCertificateRequest
+                {
                     CertificateName = certId,
                     Reason = (RevocationReason)revocationReason
                 };
 
-                Logger.Trace($"Revoking certificate id {certId}");
-                var response = GcpClient.RevokeCertificate(request);
+                Log.LogTrace($"Revoking certificate id {certId}");
+                Certificate response = GcpClient.RevokeCertificate(request);
                 return Convert.ToInt32(PKIConstants.Microsoft.RequestDisposition.REVOKED);
                 ;
             }
             catch (RpcException gEx)
             {
-                Logger.Error($"Unable to revoke certificate. Status Code: {gEx.StatusCode} | Status:{gEx.Status}");
+                Log.LogError($"Unable to revoke certificate. Status Code: {gEx.StatusCode} | Status:{gEx.Status}");
                 throw gEx;
             }
             catch (Exception ex)
             {
-                Logger.Error($"Unable to revoke certificate. {ex.Message}");
+                Log.LogError($"Unable to revoke certificate. {ex.Message}");
                 throw ex;
             }
         }
 
         /// <summary>
-        /// AnyGateway method to syncronize Google CA Certificates
+        ///     AnyGateway method to syncronize Google CA Certificates
         /// </summary>
         /// <param name="certificateDataReader">Database access to the current certificates for the CA</param>
         /// <param name="blockingBuffer"></param>
         /// <param name="certificateAuthoritySyncInfo">Detail about the CA being synchronized</param>
         /// <param name="cancelToken"></param>
         public override void Synchronize(ICertificateDataReader certificateDataReader,
-                                         BlockingCollection<CAConnectorCertificate> blockingBuffer,
-                                         CertificateAuthoritySyncInfo certificateAuthoritySyncInfo,
-                                         CancellationToken cancelToken)
+            BlockingCollection<CAConnectorCertificate> blockingBuffer,
+            CertificateAuthoritySyncInfo certificateAuthoritySyncInfo,
+            CancellationToken cancelToken)
         {
-            Logger.MethodEntry(ILogExtensions.MethodLogLevel.Debug);
+            Log.MethodEntry();
             try
             {
                 GcpClient = BuildClient();
 
                 //For sync we still need to specify the CA ID since the pool will not provide a list of certs.  
                 //Do we have a CA in Keyfactor for each even thought issuance and revocation will be pool level? Probably
-                CertificateAuthorityName caName = CertificateAuthorityName.FromProjectLocationCaPoolCertificateAuthority(ProjectId, LocationId, CAPoolId, CAId);
+                CertificateAuthorityName caName =
+                    CertificateAuthorityName.FromProjectLocationCaPoolCertificateAuthority(ProjectId, LocationId,
+                        CaPoolId, CaId);
                 if (certificateAuthoritySyncInfo.DoFullSync)
                 {
-                    var ca = GcpClient.GetCertificateAuthority(caName);
-                    ProcessCACertificateList(ca, blockingBuffer, cancelToken); 
+                    CertificateAuthority ca = GcpClient.GetCertificateAuthority(caName);
+                    ProcessCACertificateList(ca, blockingBuffer, cancelToken);
                 }
 
-                ListCertificatesRequest syncRequest = new ListCertificatesRequest()
+                ListCertificatesRequest syncRequest = new ListCertificatesRequest
                 {
-                    ParentAsCaPoolName = CaPoolName.FromProjectLocationCaPool(ProjectId,LocationId,CAPoolId),
+                    ParentAsCaPoolName = CaPoolName.FromProjectLocationCaPool(ProjectId, LocationId, CaPoolId)
                 };
 
                 if (!certificateAuthoritySyncInfo.DoFullSync)
                 {
-                    Timestamp lastSyncTime = certificateAuthoritySyncInfo.LastFullSync.Value.ToUniversalTime().ToTimestamp();
-                    Logger.Trace($"Executing an incremental sync.  Filter list by update_time >= {lastSyncTime.ToDateTime().ToLocalTime()}");
+                    Timestamp lastSyncTime =
+                        certificateAuthoritySyncInfo.LastFullSync.Value.ToUniversalTime().ToTimestamp();
+                    Log.LogTrace(
+                        $"Executing an incremental sync.  Filter list by update_time >= {lastSyncTime.ToDateTime().ToLocalTime()}");
                     syncRequest.Filter = $"update_time >= {lastSyncTime}";
                 }
 
-                var responseList = GcpClient.ListCertificates(syncRequest); 
+                PagedEnumerable<ListCertificatesResponse, Certificate> responseList =
+                    GcpClient.ListCertificates(syncRequest);
                 ProcessCertificateList(responseList, blockingBuffer, cancelToken);
             }
             catch (RpcException gEx)
             {
-                Logger.Error($"Unable to get CA Certificate List. {gEx.StatusCode} | {gEx.Status}");
+                Log.LogError($"Unable to get CA Certificate List. {gEx.StatusCode} | {gEx.Status}");
             }
             catch (Exception ex)
             {
-                Logger.Error($"Unhandled Exception: {ex}");
+                Log.LogError($"Unhandled Exception: {ex}");
             }
         }
 
         /// <summary>
-        /// AnyGateway method to validate connection detail (CAConnection section) during the Set-KeyfactorGatewayConfig cmdlet
+        ///     AnyGateway method to validate connection detail (CAConnection section) during the Set-KeyfactorGatewayConfig cmdlet
         /// </summary>
         /// <param name="connectionInfo">CAConnection section of the AnyGateway JSON file</param>
         public override void ValidateCAConnectionInfo(Dictionary<string, object> connectionInfo)
         {
-            Logger.MethodEntry(ILogExtensions.MethodLogLevel.Debug);
-            //connectionInfo is the currently imported values
-            //CONFIG is the existing configuration from the initalize
+            Log.MethodEntry();
             List<string> errors = new List<string>();
 
-            Logger.Trace("Checking required CAConnection config");
-            errors.AddRange(CheckRequiredValues(connectionInfo, PROJECT_ID_KEY, LOCATION_ID_KEY, CA_POOL_ID_KEY, CA_ID_KEY));
+            Log.LogTrace("Checking required CAConnection config");
+            errors.AddRange(CheckRequiredValues(connectionInfo, ProjectIdKey, LocationIdKey, CaPoolIdKey));
 
-            Logger.Trace("Checking permissions for JSON license file");
+            Log.LogTrace("Checking permissions for JSON license file");
             errors.AddRange(CheckEnvrionmentVariables());
 
-            Logger.Trace("Checking connectivity and CA type");
+            Log.LogTrace("Checking connectivity and CA type");
             errors.AddRange(CheckCAConfig(connectionInfo));
 
-            if (errors.Any())
-            {
-                throw new Exception(String.Join("|", errors.ToArray()));
-            }
+            if (errors.Any()) throw new Exception(string.Join("|", errors.ToArray()));
         }
 
         /// <summary>
-        /// AnyGateway method to validate product info (Template section) during the Set-KeyfactorGatewayConfig cmdlet
+        ///     AnyGateway method to validate product info (Template section) during the Set-KeyfactorGatewayConfig cmdlet
         /// </summary>
         /// <param name="productInfo">Parameters section of the AnyGateway JSON file</param>
         /// <param name="connectionInfo">CAConnection section of the AnyGateway JSON file</param>
-        public override void ValidateProductInfo(EnrollmentProductInfo productInfo, Dictionary<string, object> connectionInfo)
+        public override void ValidateProductInfo(EnrollmentProductInfo productInfo,
+            Dictionary<string, object> connectionInfo)
         {
-            Logger.MethodEntry(ILogExtensions.MethodLogLevel.Debug);
+            Log.MethodEntry();
             //TODO: Evaluate Template (if avaiable) based on ProductInfo
             //https://cloud.google.com/certificate-authority-service/docs/reference/rest/v1/projects.locations.certificateTemplates#CertificateTemplate
-            Logger.MethodExit(ILogExtensions.MethodLogLevel.Debug);
+            Log.MethodExit();
         }
 
         #region Private Helper Methods
+
         /// <summary>
-        /// Method to process Issued certificates from the Goocle CA
+        ///     Method to process Issued certificates from the Goocle CA
         /// </summary>
-        /// <param name="responseList"><see cref="ListCertificatesResponse"/> from a full or incremental sync request to the Google CA </param>
+        /// <param name="responseList">
+        ///     <see cref="ListCertificatesResponse" /> from a full or incremental sync request to the
+        ///     Google CA
+        /// </param>
         /// <param name="blockingBuffer"></param>
         /// <param name="cancelToken"></param>
-        private void ProcessCertificateList(PagedEnumerable<ListCertificatesResponse, Certificate> responseList, BlockingCollection<CAConnectorCertificate> blockingBuffer, CancellationToken cancelToken)
+        private void ProcessCertificateList(PagedEnumerable<ListCertificatesResponse, Certificate> responseList,
+            BlockingCollection<CAConnectorCertificate> blockingBuffer, CancellationToken cancelToken)
         {
-            Logger.MethodEntry(ILogExtensions.MethodLogLevel.Debug);
+            Log.MethodEntry();
             int totalCertsProcessed = 0;
             int pagesProcessed = 0;
-            foreach (var page in responseList.AsRawResponses())
+            foreach (ListCertificatesResponse page in responseList.AsRawResponses())
             {
                 if (page.Count() == 0)
                 {
-                    Logger.Warn($"Incremental Sync Returned No Results");
+                    Log.LogWarning("Incremental Sync Returned No Results");
                     continue;
                 }
 
@@ -334,7 +395,7 @@ namespace Keyfactor.AnyGateway.Google
                 {
                     Certificate cloudCert = page.ElementAt(pageCertsProcessed);
 
-                    Logger.Trace($"Add {cloudCert.CertificateName.CertificateId} for processing");
+                    Log.LogTrace($"Add {cloudCert.CertificateName.CertificateId} for processing");
 
                     CAConnectorCertificate caCert = ProcessCAResponse(cloudCert);
 
@@ -342,9 +403,8 @@ namespace Keyfactor.AnyGateway.Google
                     if (blockingBuffer.TryAdd(caCert, 50, cancelToken))
                     {
                         if (blockedCount > 0)
-                        {
-                            Logger.Warn($"Adding of {caCert.CARequestID} to queue was blocked. Took a total of {blockedCount} tries to process.");
-                        }
+                            Log.LogWarning(
+                                $"Adding of {caCert.CARequestID} to queue was blocked. Took a total of {blockedCount} tries to process.");
                         pageCertsProcessed++;
                         totalCertsProcessed++;
                     }
@@ -352,26 +412,30 @@ namespace Keyfactor.AnyGateway.Google
                     {
                         blockedCount++;
                     }
-
                 } while (pageCertsProcessed < page.Count());
+
                 pagesProcessed++;
-                Logger.Debug($"Completed processing of {pageCertsProcessed} certificates in page {pagesProcessed}");
+                Log.LogDebug($"Completed processing of {pageCertsProcessed} certificates in page {pagesProcessed}");
             }
-            Logger.Info($"Total Certificates Processed: {totalCertsProcessed} | Total Pages Processed: {pagesProcessed}");
+
+            Log.LogInformation(
+                $"Total Certificates Processed: {totalCertsProcessed} | Total Pages Processed: {pagesProcessed}");
         }
+
         /// <summary>
-        /// Method to process the Issuing Certificate of a Google CA
+        ///     Method to process the Issuing Certificate of a Google CA
         /// </summary>
-        /// <param name="ca"><see cref="CertificateAuthority"/> to process certificate from</param>
+        /// <param name="ca"><see cref="CertificateAuthority" /> to process certificate from</param>
         /// <param name="blockingBuffer">BlockingCollection provided by the Command platform for syncing CA certificates</param>
         /// <param name="cancelToken"></param>
-        private void ProcessCACertificateList(CertificateAuthority ca, BlockingCollection<CAConnectorCertificate> blockingBuffer, CancellationToken cancelToken)
+        private void ProcessCACertificateList(CertificateAuthority ca,
+            BlockingCollection<CAConnectorCertificate> blockingBuffer, CancellationToken cancelToken)
         {
-            Logger.MethodEntry(ILogExtensions.MethodLogLevel.Debug);
+            Log.MethodEntry();
             int caCertsProcessed = 0;
             do
             {
-                var caPemCert = ca.PemCaCertificates.ElementAt(caCertsProcessed);
+                string caPemCert = ca.PemCaCertificates.ElementAt(caCertsProcessed);
 
                 CAConnectorCertificate caCert = new CAConnectorCertificate
                 {
@@ -386,57 +450,112 @@ namespace Keyfactor.AnyGateway.Google
                 if (blockingBuffer.TryAdd(caCert, 50, cancelToken))
                 {
                     if (blockedCount > 0)
-                    {
-                        Logger.Warn($"Adding of {caCert.CARequestID} to queue was blocked. Took a total of {blockedCount} tries to process.");
-                    }
+                        Log.LogWarning(
+                            $"Adding of {caCert.CARequestID} to queue was blocked. Took a total of {blockedCount} tries to process.");
                     caCertsProcessed++;
                 }
                 else
                 {
                     blockedCount++;
                 }
-            } while (caCertsProcessed < (ca.PemCaCertificates.Count - 1) );
+            } while (caCertsProcessed < ca.PemCaCertificates.Count - 1);
         }
 
-        /// <summary>
-        /// Validate CA Configuration by attempting to connect and validate <see cref="CertificateAuthority.Tier"/>
-        /// </summary>
-        /// <param name="connectionInfo">CAConnection Details object from the AnyGateway Config JSON file</param>
-        /// <returns></returns>
-        private static IEnumerable<string> CheckCAConfig(Dictionary<string, object> connectionInfo)
+        private static IEnumerable<string> ValidateCaPool(Dictionary<string, object> connectionInfo)
         {
             List<string> returnValue = new List<string>();
             try
             {
-                var ca = BuildClient().GetCertificateAuthority(new GetCertificateAuthorityRequest
+                Log.LogDebug($"Validating that service account can access CA Pool with ID {connectionInfo[CaPoolIdKey] as string}");
+                CaPool caPool = BuildClient().GetCaPool(new GetCaPoolRequest()
                 {
-                    CertificateAuthorityName = CertificateAuthorityName.FromProjectLocationCaPoolCertificateAuthority(
-                        connectionInfo[PROJECT_ID_KEY] as string,
-                        connectionInfo[LOCATION_ID_KEY] as string,
-                        connectionInfo[CA_POOL_ID_KEY] as string,
-                        connectionInfo[CA_ID_KEY] as string
+                    CaPoolName = CaPoolName.FromProjectLocationCaPool(
+                        connectionInfo[ProjectIdKey] as string,
+                        connectionInfo[LocationIdKey] as string,
+                        connectionInfo[CaPoolIdKey] as string
                         )
                 });
 
-               if (ca.Tier == CaPool.Types.Tier.Devops)
-               {
-                returnValue.Add($"{ca.Tier} is an unsupported CA configuration");
-               }
+                if (caPool.Tier == CaPool.Types.Tier.Devops)
+                {
+                    string message = $"{caPool.Tier} is an unsupported CA configuration";
+                    Log.LogError(message);
+                    returnValue.Add(message);
+                }
             }
             catch (RpcException gEx)
             {
-                returnValue.Add($"Unable to connect to CA. Status Code: {gEx.StatusCode} | Status: {gEx.Status}");
+                string message = $"Unable to connect to CA Pool. Status Code: {gEx.StatusCode} | Status: {gEx.Status}";
+                Log.LogError(message);
+                returnValue.Add(message);
             }
             catch (Exception ex)
             {
-                returnValue.Add($"Unable to connect to CA. Detail: {ex.Message}");
+                string message = $"Unable to connect to CA. Detail: {ex.Message}";
+                Log.LogError(message);
+                returnValue.Add(message);
             }
 
             return returnValue;
         }
 
+        private static IEnumerable<string> ValidateCa(Dictionary<string, object> connectionInfo)
+        {
+            List<string> returnValue = new List<string>();
+            try
+            {
+                Log.LogDebug($"Validating that service account can access CA with ID {connectionInfo[CaIdKey] as string}");
+                CertificateAuthority ca = BuildClient().GetCertificateAuthority(new GetCertificateAuthorityRequest
+                {
+                    CertificateAuthorityName = CertificateAuthorityName.FromProjectLocationCaPoolCertificateAuthority(
+                        connectionInfo[ProjectIdKey] as string,
+                        connectionInfo[LocationIdKey] as string,
+                        connectionInfo[CaPoolIdKey] as string,
+                        connectionInfo[CaIdKey] as string
+                    )
+                });
+
+                if (ca.Tier == CaPool.Types.Tier.Devops)
+                {
+                    string message = $"{ca.Tier} is an unsupported CA configuration";
+                    Log.LogError(message);
+                    returnValue.Add(message);
+                }
+            }
+            catch (RpcException gEx)
+            {
+                string message = $"Unable to connect to CA. Status Code: {gEx.StatusCode} | Status: {gEx.Status}";
+                Log.LogError(message);
+                returnValue.Add(message);
+            }
+            catch (Exception ex)
+            {
+                string message = $"Unable to connect to CA. Detail: {ex.Message}";
+                Log.LogError(message);
+                returnValue.Add(message);
+            }
+
+            return returnValue;
+        }
         /// <summary>
-        /// Determines if the provided keys have been configured
+        ///     Validate CA Configuration by attempting to connect and validate <see cref="CertificateAuthority.Tier" />
+        /// </summary>
+        /// <param name="connectionInfo">CAConnection Details object from the AnyGateway Config JSON file</param>
+        /// <returns></returns>
+        private static IEnumerable<string> CheckCAConfig(Dictionary<string, object> connectionInfo)
+        {
+            if (connectionInfo.TryGetValue(CaIdKey, out object id) && !string.IsNullOrEmpty(id as string))
+            {
+                Log.LogDebug($"GCP CAS CAProxy configured with a non-empty {CaIdKey} - validating that {id as string} exists.");
+                return ValidateCa(connectionInfo);
+            }
+
+            Log.LogDebug($"GCP CAS CAProxy configured with an empty or non-existant {CaIdKey} - validating that CA pool exists.");
+            return ValidateCaPool(connectionInfo);
+        }
+
+        /// <summary>
+        ///     Determines if the provided keys have been configured
         /// </summary>
         /// <param name="connectionInfo">CAConnection Details object from the AnyGateway Config JSON file</param>
         /// <param name="args">List of keys to validate</param>
@@ -445,96 +564,116 @@ namespace Keyfactor.AnyGateway.Google
         {
             List<string> errors = new List<string>();
             foreach (string s in args)
-            {
-                if (String.IsNullOrEmpty(connectionInfo[s] as string))
+                if (string.IsNullOrEmpty(connectionInfo[s] as string))
                     errors.Add($"{s} is a required value");
-            }
             return errors;
         }
 
         /// <summary>
-        /// Determines if the AnyGateway service can read from the GOOGLE_APPLICATION_CREDENTIALS machine envrionment variable and read the contents of the 
-        /// file.
+        ///     Determines if the AnyGateway service can read from the GOOGLE_APPLICATION_CREDENTIALS machine envrionment variable
+        ///     and read the contents of the
+        ///     file.
         /// </summary>
-        /// <returns><see cref="List{string}"/> the contains any error messages for items failing validation</returns>
+        /// <returns><see cref="List{string}" /> the contains any error messages for items failing validation</returns>
         private static List<string> CheckEnvrionmentVariables()
         {
             List<string> errors = new List<string>();
             try
             {
-                string envrionmentVariablePath = Environment.GetEnvironmentVariable(AUTH_ENV_VARIABLE_NAME, EnvironmentVariableTarget.Machine);
-                if (String.IsNullOrEmpty(envrionmentVariablePath))
-                    errors.Add($"{AUTH_ENV_VARIABLE_NAME} must be conifgured with a JSON credential file");
+                string envrionmentVariablePath =
+                    Environment.GetEnvironmentVariable(AuthEnvVariableName, EnvironmentVariableTarget.Machine);
+                if (string.IsNullOrEmpty(envrionmentVariablePath))
+                {
+                    string message = $"{AuthEnvVariableName} must be conifgured with a JSON credential file";
+                    Log.LogError(message);
+                    errors.Add(message);
+                }
 
                 if (!envrionmentVariablePath.IsFullPathReadable())
-                    errors.Add($"Cannot read license file at {envrionmentVariablePath}");
+                {
+                    string message = $"Cannot read license file at {envrionmentVariablePath}";
+                    Log.LogError(message);
+                    errors.Add(message);
+                }
             }
-            catch (System.Security.SecurityException)
+            catch (SecurityException)
             {
-                errors.Add($"Access denied to {AUTH_ENV_VARIABLE_NAME} at \"HKLM\\System\\CurrentControlSet\\Control\\Session Manager\\Environment\" registry key");
+                string message =
+                    $"Access denied to {AuthEnvVariableName} at \"HKLM\\System\\CurrentControlSet\\Control\\Session Manager\\Environment\" registry key";
+                Log.LogError(message);
+                errors.Add(message);
             }
 
             return errors;
         }
+
         /// <summary>
-        /// Creates a Keyfactor AnyGateway Certificate Type from the GCP Certificate Type
+        ///     Creates a Keyfactor AnyGateway Certificate Type from the GCP Certificate Type
         /// </summary>
         /// <param name="caCertificate"></param>
-        /// <returns><see cref="CAConnectorCertificate"/> parsed from a <see cref="Certificate"/> object</returns>
+        /// <returns><see cref="CAConnectorCertificate" /> parsed from a <see cref="Certificate" /> object</returns>
         private CAConnectorCertificate ProcessCAResponse(Certificate caCertificate)
         {
-            Logger.MethodEntry(ILogExtensions.MethodLogLevel.Debug);
-            return new CAConnectorCertificate()
+            Log.MethodEntry();
+            return new CAConnectorCertificate
             {
-                CARequestID = caCertificate.CertificateName.CertificateId,//limited to 100 characters. use cert id only Required
+                CARequestID =
+                    caCertificate.CertificateName.CertificateId, //limited to 100 characters. use cert id only Required
                 CSR = caCertificate.PemCsr,
                 Certificate = caCertificate.PemCertificate,
-                Status = caCertificate.RevocationDetails is null ? 20 : 21,//required
-                SubmissionDate = caCertificate.CreateTime?.ToDateTime(),//Required
+                Status = caCertificate.RevocationDetails is null ? 20 : 21, //required
+                SubmissionDate = caCertificate.CreateTime?.ToDateTime(), //Required
                 ResolutionDate = caCertificate.CreateTime?.ToDateTime(),
                 RevocationDate = caCertificate.RevocationDetails?.RevocationTime.ToDateTime(),
-                RevocationReason = caCertificate.RevocationDetails is null ? -1 : (int)caCertificate.RevocationDetails.RevocationState //assumes revocation reasons match Keyfactor
+                RevocationReason = caCertificate.RevocationDetails is null
+                    ? -1
+                    : (int)caCertificate.RevocationDetails.RevocationState //assumes revocation reasons match Keyfactor
             };
-
         }
 
         /// <summary>
-        /// Add new line every 64 characters to propertly format a base64 string as PEM
+        ///     Add new line every 64 characters to propertly format a base64 string as PEM
         /// </summary>
-        private static Func<String, String> pemify = (ss => ss.Length <= 64 ? ss : ss.Substring(0, 64) + "\n" + pemify(ss.Substring(64)));
-        
+        private static readonly Func<string, string> pemify = ss =>
+            ss.Length <= 64 ? ss : ss.Substring(0, 64) + "\n" + pemify(ss.Substring(64));
+
         /// <summary>
-        /// Build a new instance of the CertificateAuthorityServiceClient with explict credentials from the Server Envrionment Variable
+        ///     Build a new instance of the CertificateAuthorityServiceClient with explict credentials from the Server Envrionment
+        ///     Variable
         /// </summary>
         /// <returns></returns>
         private static CertificateAuthorityServiceClient BuildClient()
         {
-            var caClient = new CertificateAuthorityServiceClientBuilder
+            CertificateAuthorityServiceClientBuilder caClient = new CertificateAuthorityServiceClientBuilder
             {
-                CredentialsPath = Environment.GetEnvironmentVariable(AUTH_ENV_VARIABLE_NAME, EnvironmentVariableTarget.Machine)
+                CredentialsPath =
+                    Environment.GetEnvironmentVariable(AuthEnvVariableName, EnvironmentVariableTarget.Machine)
             };
             return caClient.Build();
         }
 
-
         #endregion
 
         #region Obsolete Methods
+
         [Obsolete]
-        public override EnrollmentResult Enroll(string csr, string subject, Dictionary<string, string[]> san, EnrollmentProductInfo productInfo, CSS.PKI.PKIConstants.X509.RequestFormat requestFormat, RequestUtilities.EnrollmentType enrollmentType)
+        public override EnrollmentResult Enroll(string csr, string subject, Dictionary<string, string[]> san,
+            EnrollmentProductInfo productInfo, PKIConstants.X509.RequestFormat requestFormat,
+            RequestUtilities.EnrollmentType enrollmentType)
         {
             throw new NotImplementedException();
         }
 
         [Obsolete]
         public override void Synchronize(ICertificateDataReader certificateDataReader,
-                                         BlockingCollection<CertificateRecord> blockingBuffer,
-                                         CertificateAuthoritySyncInfo certificateAuthoritySyncInfo,
-                                         CancellationToken cancelToken,
-                                         string logicalName)
+            BlockingCollection<CertificateRecord> blockingBuffer,
+            CertificateAuthoritySyncInfo certificateAuthoritySyncInfo,
+            CancellationToken cancelToken,
+            string logicalName)
         {
             throw new NotImplementedException();
         }
+
         #endregion
     }
 }
